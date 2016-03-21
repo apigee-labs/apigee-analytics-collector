@@ -53,7 +53,7 @@
 	<array>
 		<dict>
 			<key>Bounds</key>
-			<string>{{956.72607421875, 150.40718078613281}, {55, 14}}</string>
+			<string>{{1017.363037109375, 150.40718078613281}, {55, 14}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
@@ -108,7 +108,7 @@
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{913.363037109375, 141}, {35, 34}}</string>
+			<string>{{974, 141}, {35, 34}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -150,13 +150,13 @@
 			<key>OrthogonalBarPoint</key>
 			<string>{0, 0}</string>
 			<key>OrthogonalBarPosition</key>
-			<real>12.246964454650879</real>
+			<real>12.263073921203613</real>
 			<key>Points</key>
 			<array>
-				<string>{913.98689447200832, 228.5939271886962}</string>
-				<string>{955.363037109375, 171}</string>
-				<string>{971, 222.00013732910156}</string>
-				<string>{926.76112524859036, 255.62005719046354}</string>
+				<string>{964.82298907954976, 228.62614644294592}</string>
+				<string>{1016, 171}</string>
+				<string>{1031.636962890625, 222.00013732910156}</string>
+				<string>{987.42282749394519, 249.90561574306645}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -195,7 +195,7 @@
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{819.99713212574943, 418.49999997041164}, {87.005744934082031, 40}}</string>
+			<string>{{880.63409501637443, 418.49999997041164}, {87.005744934082031, 40}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -304,7 +304,7 @@
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{384.35004128426499, 423.000004727261}, {365.29989624023438, 40}}</string>
+			<string>{{365.99998138846081, 463.00001488859778}, {450, 40}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -317,7 +317,7 @@
 			<key>ID</key>
 			<integer>30</integer>
 			<key>Rotation</key>
-			<real>211.34033203125</real>
+			<real>216.86988830566406</real>
 			<key>Shape</key>
 			<string>AdjustableArrow</string>
 			<key>ShapeData</key>
@@ -415,7 +415,7 @@
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{738.363037109375, 498}, {188, 233}}</string>
+			<string>{{793.63835906982422, 505}, {196, 208}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -889,7 +889,7 @@ in JSON format}</string>
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{1003.363037109375, 277}, {86, 14}}</string>
+			<string>{{1064, 277}, {86, 14}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
@@ -944,7 +944,7 @@ in JSON format}</string>
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{960.363037109375, 264}, {35, 34}}</string>
+			<string>{{1021, 264}, {35, 34}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -1188,7 +1188,7 @@ Sample payload:
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{948.36304900796267, 263.99999898323188}, {152.99998474121094, 40}}</string>
+			<string>{{1009.0000118985877, 263.99999898323188}, {152.99998474121094, 40}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -1287,7 +1287,7 @@ Sample payload:
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{1110.363037109375, 226}, {210, 109}}</string>
+			<string>{{1171, 226}, {210, 109}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -1416,7 +1416,7 @@ Sample payload:
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{785.363037109375, 229}, {141, 161}}</string>
+			<string>{{798.99999999999989, 229}, {188, 161}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -1443,7 +1443,7 @@ Sample payload:
 
 \b0 \cf0 NPM\
 \
-apigee-traffic transfer\
+apigee-nucleus-cli transfer -f \{filename\}\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
 
 \b \cf0 \
@@ -1610,7 +1610,7 @@ params:\
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{245.1815185546875, 150.59359741210938}, {149, 187.40640258789062}}</string>
+			<string>{{169, 150.59359741210938}, {225.1815185546875, 187.40640258789062}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -1637,7 +1637,7 @@ params:\
 
 \b0 \cf0 NPM\
 e.g.\
-apigee-nucleus extract traffic\
+apigee-nucleus-cli extract traffic - o \{org_name\}\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
 
 \b \cf0 params: 
@@ -1705,7 +1705,7 @@ current month)\
 	<key>MasterSheets</key>
 	<array/>
 	<key>ModificationDate</key>
-	<string>2016-03-21 20:40:45 +0000</string>
+	<string>2016-03-21 20:59:58 +0000</string>
 	<key>Modifier</key>
 	<string>Diego Zuluaga</string>
 	<key>NotesVisible</key>
@@ -1810,7 +1810,7 @@ current month)\
 		<key>SidebarWidth</key>
 		<integer>120</integer>
 		<key>VisibleRegion</key>
-		<string>{{112, 0}, {1305, 697}}</string>
+		<string>{{112, 66}, {1305, 697}}</string>
 		<key>Zoom</key>
 		<real>1</real>
 		<key>ZoomValues</key>
