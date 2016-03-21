@@ -3,4 +3,4 @@ Apigee Nucleus CLI is multipurpose Command-Line Tool leveraged by Nucleus team t
 
 The following diagram illustrates the process of exporting traffic data from Apigee Edge through the Management API:
  
-![apigee-nucleus-cli-extract](./images/apigee-nucleus-cli-export-traffic-flow.png)
+![apigee-nucleus-cli-export-traffic-flow](./images/apigee-nucleus-cli-export-traffic-flow.png)
