@@ -58,7 +58,7 @@ $ apigee-nucleus-cli export traffic
 
 The following diagram illustrates the process of exporting traffic data from Apigee Edge through the Management API:
  
-![apigee-nucleus-cli-export-traffic-flow](https://gitlab.apigee.com/nucleus/apigee-nucleus-cli/raw/master/images/apigee-nucleus-cli-export-traffic-flow.png)
+![apigee-nucleus-cli-export-traffic-flow](https://gitlab.apigee.com/nucleus/apigee-analytics-cli/raw/master/images/apigee-nucleus-cli-export-traffic-flow.png)
 
 #### Environment variables
 Environment variable can be set via ```.env``` file with the following environment variables:
