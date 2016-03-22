@@ -4,6 +4,7 @@ Apigee Nucleus CLI is multipurpose Command-Line Tool leveraged by Nucleus team t
 | Gitlabs Repo   | https://gitlab.apigee.com/nucleus/apigee-nucleus-cli/tree/master  |
 | -------------- |:-----------------------------------------------------------------:|  
 
+
 #### Parameters
 
 ```bash
@@ -58,3 +59,12 @@ $ apigee-nucleus-cli export traffic
 The following diagram illustrates the process of exporting traffic data from Apigee Edge through the Management API:
  
 ![apigee-nucleus-cli-export-traffic-flow](https://gitlab.apigee.com/nucleus/apigee-nucleus-cli/raw/master/images/apigee-nucleus-cli-export-traffic-flow.png)
+
+#### Environment variables
+Environment variable can be set via ```.env``` file with the following environment variables:
+
+```bash
+apigee_mgmt_api_uri=https://api.enterprise.apigee.com/v1
+apigee_mgmt_api_email=sample@apigee.com
+apigee_mgmt_api_password=MyPasswordHere
+```
