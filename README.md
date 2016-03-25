@@ -1,34 +1,40 @@
-# apigee-nucleus-cli
-Apigee Nucleus CLI is multipurpose Command-Line Tool leveraged by Nucleus team to export, import or transfer data from Edge Management API to Nucleus.
+# apigee-analytics-cli
+Apigee Nucleus CLI is multipurpose Command-Line Tool to export, import or transfer data from Edge Management API to Nucleus.
 
-| Gitlabs Repo   | https://gitlab.apigee.com/nucleus/apigee-nucleus-cli/tree/master  |
+| Gitlabs Repo   | https://gitlab.apigee.com/nucleus/apigee-analytics-cli.git  |
 | -------------- |:-----------------------------------------------------------------:|  
 
 
 #### Parameters
 
 ```bash
-$ apigee-nucleus-cli export traffic --help
+$ apigee-analytics-cli export traffic --help
 
-  Usage: apigee-nucleus-cli-export-traffic [options]
+  Usage: apigee-analytics-cli-export-traffic [options]
 
   Export data from the management API
 
   Options:
 
-    -h, --help                 output usage information
-    -m, --mgmt_uri [mgmt_uri]  URL to management API
-    -e, --email                Email registered on the Management API
-    -p, --password             Password associated to the email account
-    -o, --output <path>        Path and filename to save output
-
+    -h, --help                                                 output usage information
+    -m, --apigee_mgmt_api_uri <apigee_mgmt_api_uri>            URL to management API
+    -u, --apigee_mgmt_api_email <apigee_mgmt_api_email>        Email registered on the Management API
+    -p, --apigee_mgmt_api_password <apigee_mgmt_api_password>  Password associated to the email account
+    -i, --include_orgs <items>                                 Include orgs from this list
+    -x, --exclude_orgs <items>                                 Exclude orgs from this list
+    -n, --include_envs <items>                                 Include environments from this list
+    -e, --exclude_envs <items>                                 Exclude envs from this list
+    -o, --output <path>                                        Path to save output files
+    -s, --time_range_start <time_range_start>                  Time range start for querying traffic stats e.g. "03/01/2016 00:00"
+    -e, --time_range_end <time_range_end>                      Time range end for querying traffic stats e.g. "03/31/2016 24:00"
+    -t, --time_unit <time_unit>                                Time unit for traffic stats. Default week.
 ```
 
 
 ### Export Traffic Data
 
 ```bash
-$ apigee-nucleus-cli export traffic                                                                                                                 
+$ apigee-analytics-cli export traffic                                                                                                                 
 {
   "environments" : [ {
     "metrics" : [ {
@@ -58,7 +64,7 @@ $ apigee-nucleus-cli export traffic
 
 The following diagram illustrates the process of exporting traffic data from Apigee Edge through the Management API:
  
-![apigee-nucleus-cli-export-traffic-flow](https://gitlab.apigee.com/nucleus/apigee-analytics-cli/raw/master/images/apigee-nucleus-cli-export-traffic-flow.png)
+![apigee-analytics-cli-export-traffic-flow](https://gitlab.apigee.com/nucleus/apigee-analytics-cli/raw/master/images/apigee-analytics-cli-export-traffic-flow.png)
 
 #### Environment variables
 Environment variable can be set via ```.env``` file with the following environment variables:
@@ -67,4 +73,10 @@ Environment variable can be set via ```.env``` file with the following environme
 apigee_mgmt_api_uri=https://api.enterprise.apigee.com/v1
 apigee_mgmt_api_email=sample@apigee.com
 apigee_mgmt_api_password=MyPasswordHere
+```
+
+#### Enable Debugger
+The following command enables debug entries through standard output:
+```
+$ DEBUG=* apigee-analytics-cli export traffic --include_orgs nucleus --include_envs=prod,test -d 5 | pbcopy
 ```
