@@ -13,10 +13,6 @@ var program = require('commander'),
     curl = require('curl-cmd'),
     qs = require('qs');
 
-function list(val) {
-  return val.split(',');
-}
-
 program
     .description('Export data from the management API')
     .option("-D, --dimension <dimension>", "The traffic dimension to collect. Valid dimensions: apiproducts, developer, apps, apiproxy(default)", /^(apiproducts|developer|apps|apiproxy)$/i, 'apiproxy')
@@ -55,14 +51,14 @@ function extract_traffic(options) {
     .then( get_orgs_with_envs.bind({ options: options } ) )
     .then( exclude_envs_from_orgs.bind( { options: options } ) )
     .then( get_traffic.bind( { options: options } ) )
-    .then( stream_or_save_traffic.bind( { options: options } ) )
+    .then( post_or_save_traffic.bind( { options: options } ) )
     .catch( function(err) {
       console.log( err.stack );
       throw err;
     })
 }
 
-function stream_or_save_traffic( org_env_traffic_promises ) {
+function post_or_save_traffic(org_env_traffic_promises ) {
   var options = this.options;
   return Promise.all( org_env_traffic_promises )
     .then( function( org_env_traffic_array ) {
@@ -109,11 +105,10 @@ function post_traffic( traffic_array, options ){
 
 function process_traffic_response( data_array ) {
   var traffic_array = this.traffic_array;
-  var result = [];
-  data_array.forEach( function( data_item, index ) {
-    result.push( { org: traffic_array[index].org, env: traffic_array[index].env,
+  var result = data_array.map( function( data_item, index ) {
+    return { org: traffic_array[index].org, env: traffic_array[index].env,
       time_range_start: traffic_array[index].time_range_start,
-      time_range_end: traffic_array[index].time_range_end, response: data_item  } )
+      time_range_end: traffic_array[index].time_range_end, response: data_item  }
   });
   process.stdout.write( JSON.stringify(result, null, 2) );
 }
@@ -127,7 +122,7 @@ function get_traffic( org ) {
   debug( 'date_windows', date_windows);
   org.forEach( function( org ) {
         org.envs.forEach( function( env ) {
-          date_windows.forEach ( function( date_window ) {
+          org_env_window_options = date_windows.map( function( date_window ) {
             debug('time range', date_window.start_date_str.concat('~').concat(date_window.end_date_str));
             var _options = get_base_options( options, ['/organizations', org.org, '/environments/', env, '/stats/', options.dimension ], {
               'select': 'sum(message_count)',
@@ -137,12 +132,17 @@ function get_traffic( org ) {
             _options.stat = { org: org.org, env: env,
               time_range_start: date_window.start_date_str,
               time_range_end: date_window.end_date_str }
-            org_env_window_options.push( _options );
+            return _options;
           });
         })
       }
   );
-  debug('org_env_window_options', org_env_window_options);
+  var org_env_window_traffic_promise = get_org_env_window_traffic_promises( org_env_window_options );
+  return org_env_window_traffic_promise;
+}
+
+function get_org_env_window_traffic_promises( org_env_window_options ) {
+  debug('get_org_env_window_traffic_promises', org_env_window_options);
   var org_env_window_traffic_promise = org_env_window_options.map( throat( 10, function( org_env_window_option ) {
     debug('cURL command',  generatecURL(org_env_window_option) );
     return request( org_env_window_option )
@@ -317,4 +317,8 @@ function generatecURL(options) {
   }
   //log the curl command to the console
   return curl;
+}
+
+function list(val) {
+  return val.split(',');
 }

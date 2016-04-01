@@ -89,7 +89,7 @@ The following diagram illustrates the process of exporting traffic data from Api
 ![apigee-analytics-cli-export-traffic-flow](https://gitlab.apigee.com/nucleus/apigee-analytics-cli/raw/master/images/apigee-analytics-cli-export-traffic-flow.png)
 
 #### Environment variables
-Environment variable can be set via arguments or ```.env``` file with the following environment variables:
+Environment variable can be set via arguments or ```.env``` file:
 
 ```bash
 apigee_mgmt_api_uri=https://api.enterprise.apigee.com/v1
@@ -100,6 +100,11 @@ apigee_analytics_client_id={client_id_email_360@apigee.com}
 apigee_analytics_secret=myScr3tHe4e
 ```
 
+#### TODO
+[] Support CLI Replay capabilities from saved files.
+
+### References
+
 #### API
 In order to push traffic to Apigee, this CLI tool requires access to [Apigee-Analytics-CLI-API](https://gitlab.apigee.com/nucleus/apigee-analytics-cli-api).
 
@@ -107,6 +112,3 @@ This API is accessible through this URL:
 ```bash
 curl https://nucleus-api-test.apigee.com/v1/apigee-analytics-cli-api/traffic/orgs/{org_name} -v -X POST -H 'Content-Type:application/json' -u credentials:password
 ```
-
-#### TODO
-[] Support CLI Replay capabilities from saved files.
