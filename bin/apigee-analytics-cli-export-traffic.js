@@ -4,12 +4,14 @@ require('dotenv').config();
 
 var program = require('commander'),
     request = require('request-promise'),
+    throat = require('throat'),
     fs = require('fs'),
     path = require('path'),
     dateFormat = require('dateformat'),
     urljoin = require('url-join'),
-    debug = require('debug')('apigee-nucleus'),
-    chalk = require('chalk');
+    chalk = require('chalk'),
+    curl = require('curl-cmd'),
+    qs = require('qs');
 
 function list(val) {
   return val.split(',');
@@ -33,15 +35,24 @@ program
     .option("-s, --time_range_start <time_range_start>", 'Time range start for querying traffic stats e.g. "03/01/2016 00:00"')
     .option("-e, --time_range_end <time_range_end>", 'Time range end for querying traffic stats e.g. "04/01/2016 24:00"')
     .option("-t, --time_unit <time_unit>", 'Time unit for traffic stats. Default week. Default units by hour. Valid time units: second, minute, hour, day, week', /^(second|minute|hour|day|week)$/i, 'hour')
+    .option("-U, --apigee_analytics_api_url <apigee_analytics_api_url>", "apigee analytics URL to submit the traffic output. Send a request to 360@apigee.com to request credentials.")
+    .option("-S, --standard_output", "output through the terminal (stdout).")
+    .option("-c, --apigee_analytics_client_id <apigee_analytics_client_id>", "cliend_id used to authenticate against apigee analytics api")
+    .option("-r, --apigee_analytics_secret <apigee_analytics_secret>", "secret used to authenticate againts apigee analytics api")
+    .option("-R, --include_curl_commands", "include sample cURL commands for debugging")
+    .option("-v, --verbose","make the operation more talkative")
     .parse(process.argv);
+
+if( program.verbose ) process.env.DEBUG = '*';
+var debug = require('debug')('apigee-nucleus');
 
 extract_traffic(program);
 
 function extract_traffic(options) {
   get_include_orgs_promise(options)
-    .then( get_orgs.bind({ options: options }) )
+    .then( get_orgs.bind({ options: options } ) )
     .then( get_without_excluded_orgs.bind( { options: options } ) )
-    .then( get_orgs_with_envs.bind({ options: options }) )
+    .then( get_orgs_with_envs.bind({ options: options } ) )
     .then( exclude_envs_from_orgs.bind( { options: options } ) )
     .then( get_traffic.bind( { options: options } ) )
     .then( stream_or_save_traffic.bind( { options: options } ) )
@@ -51,48 +62,100 @@ function extract_traffic(options) {
     })
 }
 
-function stream_or_save_traffic(org_env_traffic_promises ) {
+function stream_or_save_traffic( org_env_traffic_promises ) {
   var options = this.options;
   return Promise.all( org_env_traffic_promises )
     .then( function( org_env_traffic_array ) {
+      var org_env_traffic_array_str = JSON.stringify({"entities": org_env_traffic_array});
       if (options.output) {
         debug('options.output',options.output);
-        fs.writeFileSync(options.output, JSON.stringify({"entities": [org_env_traffic_array]}));
+        fs.writeFileSync(options.output, org_env_traffic_array_str);
         console.log(chalk.green('File saved successfully', options.output));
+      } else if( options.standard_output ){
+        process.stdout.write(org_env_traffic_array_str);
       } else {
-        process.stdout.write(JSON.stringify({ entities: org_env_traffic_array }));
+        return post_traffic( org_env_traffic_array, options );
       }
     })
 }
 
+function post_traffic( traffic_array, options ){
+  var client_id = options.apigee_analytics_client_id || process.env["apigee_analytics_client_id"];
+  var secret = options.apigee_analytics_secret || process.env["apigee_analytics_secret"];
+  debug('secret', secret);
+  var apigee_analytics_api_url = process.env["apigee_analytics_api_url"] || options.apigee_analytics_api_url;
+  if( !client_id || !secret ) throw new Error('apigee_analytics_client_id or apigee_analytics_secret are required.');
+  if( !apigee_analytics_api_url ) throw new Error('apigee_analytics_api_url is required');
+  var traffic_array_sent_p = traffic_array.map( throat( 10, function( org_env_traffic ) {
+    var _options = {
+      method: 'POST',
+      uri: urljoin( apigee_analytics_api_url, org_env_traffic.org ),
+      body: org_env_traffic.traffic,
+      json: true,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': "Basic " + new Buffer(client_id + ":" + secret).toString("base64")
+      }
+    }
+    debug('post_traffic cURL', generatecURL(_options))
+    return request( _options )
+        .catch( function(err) {
+          throw new Error("Error calling API " + generatecURL(_options) + err.message);
+        });
+  }));
+  return Promise.all( traffic_array_sent_p )
+          .then( process_traffic_response.bind( { traffic_array: traffic_array } ) );
+}
+
+function process_traffic_response( data_array ) {
+  var traffic_array = this.traffic_array;
+  var result = [];
+  data_array.forEach( function( data_item, index ) {
+    result.push( { org: traffic_array[index].org, env: traffic_array[index].env,
+      time_range_start: traffic_array[index].time_range_start,
+      time_range_end: traffic_array[index].time_range_end, response: data_item  } )
+  });
+  process.stdout.write( JSON.stringify(result, null, 2) );
+}
+
 function get_traffic( org ) {
   var options = this.options;
-  var org_env_window_traffic_promises = [];
+  var org_env_window_options = [];
   var start_end_dates = get_start_end_dates(options);
   debug( 'start_end_dates', start_end_dates);
   var date_windows = get_date_windows( start_end_dates, options.window );
   debug( 'date_windows', date_windows);
   org.forEach( function( org ) {
-    org.envs.forEach( function( env ) {
-      date_windows.forEach ( function( date_window ) {
-        debug('time range', date_window.start_date_str.concat('~').concat(date_window.end_date_str));
-        org_env_window_traffic_promises.push(
-            request( get_base_options( options, ['/organizations', org.org, '/environments/', env, '/stats/', options.dimension ], {
+        org.envs.forEach( function( env ) {
+          date_windows.forEach ( function( date_window ) {
+            debug('time range', date_window.start_date_str.concat('~').concat(date_window.end_date_str));
+            var _options = get_base_options( options, ['/organizations', org.org, '/environments/', env, '/stats/', options.dimension ], {
               'select': 'sum(message_count)',
               'timeRange': date_window.start_date_str.concat('~').concat(date_window.end_date_str),
               'timeUnit': options["time_unit"]
-            } ) )
-                .then( function( res ) {
-                  var stat = { org: org.org, env: env, traffic: JSON.parse(res),
-                    time_range_start: date_window.start_date_str,
-                    time_range_end: date_window.end_date_str }
-                  return stat;
-                } ) );
-      });
-    })
-  }
+            } );
+            _options.stat = { org: org.org, env: env,
+              time_range_start: date_window.start_date_str,
+              time_range_end: date_window.end_date_str }
+            org_env_window_options.push( _options );
+          });
+        })
+      }
   );
-  return org_env_window_traffic_promises;
+  debug('org_env_window_options', org_env_window_options);
+  var org_env_window_traffic_promise = org_env_window_options.map( throat( 10, function( org_env_window_option ) {
+    debug('cURL command',  generatecURL(org_env_window_option) );
+    return request( org_env_window_option )
+        .then( function( res_array ) {
+          org_env_window_option.stat.traffic = JSON.parse(res_array);
+          return org_env_window_option.stat;
+        } )
+        .catch( function(err) {
+          throw new Error("Error calling API " + generatecURL(org_env_window_option) + err.message);
+          //console.log("Error calling API " + generatecURL(org_env_window_option) + err.message);
+        })
+  }) );
+  return org_env_window_traffic_promise;
 }
 
 function get_start_end_dates( options ) {
@@ -178,16 +241,21 @@ function get_orgs_with_envs( orgs ) {
     return orgs
   }
   else{
-    var promises = orgs.map( function( org ) {
-      return request( get_base_options( 'options', ['/organizations/', org, '/environments'] ) );
-    } );
+    var promises = orgs.map( throat( 10, function( org ) {
+      var _options = get_base_options( options, ['/organizations/', org, '/environments'] );
+      debug('get_orgs_with_envs', generatecURL(_options))
+      return request( _options )
+                .catch( function(err) {
+                  throw new Error("Error calling API " + generatecURL(_options) + err.message);
+                });
+    } ) );
     return Promise.all(promises)
         .then( function( envs ) {
           var orgs_with_env = envs.map( function( env, index ) {
             return { org: orgs[index], envs: JSON.parse(env) }
           })
           return orgs_with_env;
-        } );
+        } )
   }
 }
 
@@ -202,12 +270,18 @@ function remove_array( from, values ) {
 }
 
 function get_base_options( options, suffixArray, qs ) {
-  debug('apigee_mgmt_api_uri',options["apigee_mgmt_api_uri"] || process.env["apigee_mgmt_api_uri"]);
+  var apigee_mgmt_api_uri = options["apigee_mgmt_api_uri"] || process.env["apigee_mgmt_api_uri"];
+  var apigee_mgmt_api_email = options["apigee_mgmt_api_email"] || process.env["apigee_mgmt_api_email"];
+  var apigee_mgmt_api_password = options["apigee_mgmt_api_password"] || process.env["apigee_mgmt_api_password"];
+  debug('apigee_mgmt_api_uri', apigee_mgmt_api_uri);
+  if( !apigee_mgmt_api_uri ) throw new Error('Make sure apigee_mgmt_api_uri is set.');
+  if( !apigee_mgmt_api_email ) throw new Error('Make sure apigee_mgmt_api_email is set');
+  if( !apigee_mgmt_api_password ) throw new Error('Make sure apigee_mgmt_api_password is set');
   var default_base_options = {
-    uri: urljoin( options["apigee_mgmt_api_uri"] || process.env["apigee_mgmt_api_uri"] ),
+    uri: urljoin( apigee_mgmt_api_uri ),
     headers: {
-      'Authorization': "Basic " + new Buffer( ( options["apigee_mgmt_api_email"] || process.env["apigee_mgmt_api_email"] ) + ":"
-          + ( options["apigee_mgmt_api_password"] || process.env["apigee_mgmt_api_password"] )).toString("base64")
+      'Authorization': "Basic " + new Buffer( ( apigee_mgmt_api_email ) + ":"
+          + ( apigee_mgmt_api_password )).toString("base64")
     },
     qs: qs
   }
@@ -216,4 +290,31 @@ function get_base_options( options, suffixArray, qs ) {
   });
   debug( 'get_base_options', default_base_options.uri );
   return default_base_options;
+}
+
+function generatecURL(options) {
+  var curl = 'curl';
+  var method = (options.method || 'GET').toUpperCase();
+  var body = options.body || {};
+  var uri = options.uri;
+  var qstring = qs.stringify(options.qs);
+
+  //curl - add the method to the command (no need to add anything for GET)
+  if (method === 'POST') {curl += ' -X POST'; }
+  else if (method === 'PUT') { curl += ' -X PUT'; }
+  else if (method === 'DELETE') { curl += ' -X DELETE'; }
+  else { curl += ' -X GET'; }
+
+  //curl - append the path
+  curl += ' ' + uri;
+  curl += '?' + qstring;
+
+  //curl - add the body
+  body = JSON.stringify(body); //only in node module
+  if (body !== '"{}"' && method !== 'GET' && method !== 'DELETE') {
+    //curl - add in the json obj
+    //curl += " -d '" + body + "'";
+  }
+  //log the curl command to the console
+  return curl;
 }

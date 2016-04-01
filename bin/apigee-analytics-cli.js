@@ -24,5 +24,6 @@ program
     .version('0.0.1')
     //.usage('[options] <file ...>')
     .command('export', 'Export data from the management API')
+    .command('init', 'Initialize environment for capturing traffic');
 
 program.parse(process.argv);
