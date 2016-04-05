@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-require('dotenv').config();
+require('dotenv').config({silent: true});
 
 var program = require('commander'),
     request = require('request-promise'),
@@ -11,7 +11,9 @@ var program = require('commander'),
     urljoin = require('url-join'),
     chalk = require('chalk'),
     curl = require('curl-cmd'),
-    qs = require('qs');
+    qs = require('qs'),
+    mask = require('json-mask'),
+    CronJob = require('cron').CronJob;
 
 program
     .description('Export data from the management API')
@@ -37,14 +39,31 @@ program
     .option("-r, --apigee_analytics_secret <apigee_analytics_secret>", "secret used to authenticate againts apigee analytics api")
     .option("-R, --include_curl_commands", "include sample cURL commands for debugging")
     .option("-v, --verbose","make the operation more talkative")
+    .option("-N, --run_as_standalone_cronjob","indicate to run as a standalone job in background")
+    .option("-E, --cronjob_schedule <cronjob schedule>","cronjob schedule. Default schedule as \"30 2 * * *\", everyday at 2:30 am. Requires --run_as_standalone_flag","30 2 * * *")
     .parse(process.argv);
 
+// this is required to enable debug as a flag instead of as an environment variable
 if( program.verbose ) process.env.DEBUG = '*';
 var debug = require('debug')('apigee-nucleus');
 
-extract_traffic(program);
+if( !program.run_as_standalone_cronjob ) extract_traffic(program);
+else {
+  debug('executing job with program.cronjob_schedule', program.cronjob_schedule);
+  var job = new CronJob({
+    cronTime: program.cronjob_schedule,
+    onTick: function() {
+      extract_traffic(program);
+      //console.log('testing');
+    },
+    start: false,
+    timeZone: 'America/Los_Angeles'
+  });
+  job.start();
+}
 
 function extract_traffic(options) {
+  debug('options.run_as_standalone_cronjob', options.run_as_standalone_cronjob);
   get_include_orgs_promise(options)
     .then( get_orgs.bind({ options: options } ) )
     .then( get_without_excluded_orgs.bind( { options: options } ) )
@@ -142,7 +161,7 @@ function get_traffic( org ) {
 }
 
 function get_org_env_window_traffic_promises( org_env_window_options ) {
-  debug('get_org_env_window_traffic_promises', org_env_window_options);
+  debug('get_org_env_window_traffic_promises', mask(org_env_window_options, 'qs,stat'));
   var org_env_window_traffic_promise = org_env_window_options.map( throat( 10, function( org_env_window_option ) {
     debug('cURL command',  generatecURL(org_env_window_option) );
     return request( org_env_window_option )
