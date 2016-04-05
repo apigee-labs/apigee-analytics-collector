@@ -73,7 +73,8 @@ function extract_traffic(options) {
     .then( post_or_save_traffic.bind( { options: options } ) )
     .catch( function(err) {
       console.log( err.stack );
-      throw err;
+      process.exit(1);
+      //throw err;
     })
 }
 
