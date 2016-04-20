@@ -1,10 +1,11 @@
-# apigee-analytics-cli
-This is a tool for publishing analytics data from Edge to Apigee Analytics(AKA Nucleus). It leverages Edge Management API to retrieve data from Cloud or On-prem orgs.
-
-| Gitlabs Repo   | https://gitlab.apigee.com/nucleus/apigee-analytics-cli.git  |
-| -------------- |:-----------------------------------------------------------------:|
+# apigee-analytics-forwarder
+This is a tool for forwarding analytics data from Edge to Apigee Analytics. It leverages Edge Management API to retrieve data from Cloud or On-Prem orgs and forwards it to Apigee Analytics.
 
 #### <a name="installation"></a>Installation
+
+##### Private Repo
+`sh
+`
 
 `apigee-analytics-cli` is a Node.js module and you can install it using npm:
 

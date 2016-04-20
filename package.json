@@ -1,6 +1,6 @@
 {
-  "name": "apigee-analytics-cli",
-  "version": "1.0.0",
+  "name": "apigee-analytics-forwarder",
+  "version": "1.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,7 @@
   "author": "",
   "license": "Apache-2.0",
   "bin": {
-    "apigee-analytics-cli": "./bin/apigee-analytics-cli.js"
+    "apigee-analytics-forwarder": "./bin/apigee-analytics-forwarder.js"
   },
   "dependencies": {
     "chalk": "^1.1.1",
