@@ -10,7 +10,7 @@ NPM 2.x or greater and Node.js 4.x.
 ##### Directly From Repo
 ```javascript
 $ git clone https://github.com/apigee/apigee-analytics-forwarder.git
-$ sudo npm install
+$ sudo npm install -g
 ```
 ##### From NPM
 This method is available once the team finishes testing.
