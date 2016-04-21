@@ -24,7 +24,7 @@ program
                                      'results in shorter-lived AX requests and can be used to reduce timeouts from AX API. 3 by default', 3, parseInt)
     .option("-m, --apigee_mgmt_api_uri <apigee_mgmt_api_uri>", "URL to management API")
     .option("-u, --apigee_mgmt_api_email <apigee_mgmt_api_email>", "Email registered on the Management API. See .env file to setup default value")
-    .option("-p, --apigee_mgmt_api_password <apigee_mgmt_api_password>", "Password associated to the email account")
+    .option("-p, --apigee_mgmt_api_password <apigee_mgmt_api_password>", "Password associated to the management api email account")
     .option("-i, --include_orgs <items>", 'Include orgs from this list', list)
     .option("-x, --exclude_orgs <items>", 'Exclude orgs from this list', list)
     .option("-n, --include_envs <items>", 'Include environments from this list',list)
@@ -39,8 +39,8 @@ program
     .option("-r, --apigee_analytics_secret <apigee_analytics_secret>", "secret used to authenticate againts apigee analytics api")
     .option("-R, --include_curl_commands", "include sample cURL commands for debugging")
     .option("-v, --verbose","make the operation more talkative")
-    .option("-N, --run_as_standalone_cronjob","indicate to run as a standalone job in background")
-    .option("-E, --cronjob_schedule <cronjob schedule>","cronjob schedule. Default schedule as \"30 2 * * *\", everyday at 2:30 am. Requires --run_as_standalone_flag","30 2 * * *")
+    //.option("-N, --run_as_standalone_cronjob","indicate to run as a standalone job in background")
+    //.option("-E, --cronjob_schedule <cronjob schedule>","cronjob schedule. Default schedule as \"30 2 * * *\", everyday at 2:30 am. Requires --run_as_standalone_flag","30 2 * * *")
     .parse(process.argv);
 
 // this is required to enable debug as a flag instead of as an environment variable
