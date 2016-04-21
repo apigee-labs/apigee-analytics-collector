@@ -55,7 +55,7 @@ $ apigee-analytics-forwarder export traffic --help
 
 #### Getting started
 
-For instance, here's the command to retrieve traffic data and standard output print from abcde organization for the last three days:
+For instance, here's the command to retrieve traffic data and standard output print from `abcde` org for the last three days:
 ```bash
 $ apigee-analytics-forwarder export traffic --include_orgs abcde -p $ae_password --apigee_mgmt_api_uri https://api.enterprise.apigee.com/v1 --apigee_mgmt_api_email $ae_username \
 --apigee_analytics_api_url https://nucleus-api-test.apigee.com/v1/apigee-analytics-cli-api/traffic/orgs --apigee_analytics_client_id $apigee_analytics_client_id \
@@ -103,7 +103,7 @@ It is highly recommended to leverage a job scheduler to execute this job once on
 
 #### TODO
 
-[] Support CLI Replay capabilities from saved files.
+ - [ ] Support CLI Replay capabilities from saved files.
 
 ### References
 
