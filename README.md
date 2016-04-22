@@ -13,7 +13,7 @@ $ git clone https://github.com/apigee/apigee-analytics-forwarder.git
 $ cd apigee-analytics-forwarder
 $ sudo npm install -g
 ```
-**NOTE**: To update to the latest release, execute `git pull` followed by `npm update -g`. 
+**NOTE**: To update to the latest release, execute `git pull` followed by `sudo npm uninstall -g` and `sudo npm install -g`. 
 
 ##### From NPM
 This method is available once the team finishes testing.
@@ -87,18 +87,6 @@ $ apigee-analytics-forwarder export traffic --include_orgs abcde -p $ae_password
 ```
 
 You're done. Check other arguments to customize your workflow. And please be mindful of providing large time ranges and windows, by default it is set to 3 full days, which is more than enough to catch up if apigee-analytics-forwarder stopped running for a few hours.
-
-#### Environment variables
-Environment variables can be set via arguments or ```.env``` file located in the same folder:
-
-```bash
-apigee_mgmt_api_uri=https://api.enterprise.apigee.com/v1
-apigee_mgmt_api_email=sample@apigee.com
-apigee_mgmt_api_password=MyPasswordHere
-apigee_analytics_api_url=https://nucleus-api-test.apigee.com/v1/apigee-analytics-cli-api/traffic/orgs
-apigee_analytics_client_id={client_id_email_360@apigee.com}
-apigee_analytics_secret=myScr3tHe4e
-```
 
 #### Scheduling
 
