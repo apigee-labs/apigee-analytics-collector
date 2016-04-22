@@ -133,16 +133,17 @@ function process_traffic_response( data_array ) {
   process.stdout.write( JSON.stringify(result, null, 2) );
 }
 
-function get_traffic( org ) {
+function get_traffic( orgs ) {
   var options = this.options;
   var org_env_window_options = [];
   var start_end_dates = get_start_end_dates(options);
   debug( 'start_end_dates', start_end_dates);
   var date_windows = get_date_windows( start_end_dates, options.window );
   debug( 'date_windows', date_windows);
-  org.forEach( function( org ) {
+  debug('get_traffic', orgs);
+  orgs.forEach( function( org ) {
         org.envs.forEach( function( env ) {
-          org_env_window_options = date_windows.map( function( date_window ) {
+          date_windows.forEach( function( date_window ) {
             debug('time range', date_window.start_date_str.concat('~').concat(date_window.end_date_str));
             var _options = get_base_options( options, ['/organizations', org.org, '/environments/', env, '/stats/', options.dimension ], {
               'select': 'sum(message_count)',
@@ -152,11 +153,14 @@ function get_traffic( org ) {
             _options.stat = { org: org.org, env: env,
               time_range_start: date_window.start_date_str,
               time_range_end: date_window.end_date_str };
-            return _options;
+            //return _options;
+            //org_env_window_options =
+            org_env_window_options.push( _options );
           });
         });
       }
   );
+  debug('get_traffic', org_env_window_options);
   var org_env_window_traffic_promise = get_org_env_window_traffic_promises( org_env_window_options );
   return org_env_window_traffic_promise;
 }
@@ -350,5 +354,5 @@ function generatecURL(options) {
 }
 
 function list(val) {
-  return val.split(',');
+  return val.replace(/\s/g,'').split(',');
 }

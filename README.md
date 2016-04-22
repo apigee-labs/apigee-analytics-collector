@@ -13,6 +13,8 @@ $ git clone https://github.com/apigee/apigee-analytics-forwarder.git
 $ cd apigee-analytics-forwarder
 $ sudo npm install -g
 ```
+*NOTE*: To update to latest the release, execute `git pull` followed by `npm update -g`. 
+
 ##### From NPM
 This method is available once the team finishes testing.
 
