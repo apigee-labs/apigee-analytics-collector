@@ -20,7 +20,6 @@ limitations under the License.
 
 var program = require('commander'),
     pjson = require('../package.json');
-console.log(pjson)
 
 program
     .version(pjson.version)
