@@ -18,10 +18,12 @@ limitations under the License.
 
 'use strict';
 
-var program = require('commander');
+var program = require('commander'),
+    pjson = require('../package.json');
+console.log(pjson)
 
 program
-    .version('0.0.1')
+    .version(pjson.version)
     //.usage('[options] <file ...>')
     .command('export', 'Export data from the management API')
     // .command('init', 'Initialize environment for capturing traffic');
