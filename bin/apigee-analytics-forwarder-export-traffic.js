@@ -19,9 +19,11 @@ program
     .description('Export data from the management API')
     .option("-D, --dimension <dimension>", "The traffic dimension to collect. Valid dimensions: apiproducts, developer, apps, apiproxy(default)", /^(apiproducts|developer|apps|apiproxy)$/i, 'apiproxy')
     .option("-d, --days <days>", "The number of days to collect in retrograde. 3 by default", 3, parseInt)
-    .option("-w, --window <window>", 'The number days to collect per request.  For example, you can collect a month ' +
+
+    // removed because of bug in windows bigger than 24 hours in stats api
+    /*.option("-w, --window <window>", 'The number days to collect per request.  For example, you can collect a month ' +
                                      'of traffic one day at a time, 3 days at a time or \'N\' days at a time.  Using this ' +
-                                     'results in shorter-lived AX requests and can be used to reduce timeouts from AX API. 3 by default', 3, parseInt)
+                                     'results in shorter-lived AX requests and can be used to reduce timeouts from AX API. 3 by default', 1, parseInt)*/
     .option("-m, --apigee_mgmt_api_uri <apigee_mgmt_api_uri>", "URL to management API")
     .option("-u, --apigee_mgmt_api_email <apigee_mgmt_api_email>", "Email registered on the Management API. See .env file to setup default value")
     .option("-p, --apigee_mgmt_api_password <apigee_mgmt_api_password>", "Password associated to the management api email account")
@@ -54,7 +56,6 @@ else {
     cronTime: program.cronjob_schedule,
     onTick: function() {
       extract_traffic(program);
-      //console.log('testing');
     },
     start: false,
     timeZone: 'America/Los_Angeles'
@@ -138,7 +139,7 @@ function get_traffic( orgs ) {
   var org_env_window_options = [];
   var start_end_dates = get_start_end_dates(options);
   debug( 'start_end_dates', start_end_dates);
-  var date_windows = get_date_windows( start_end_dates, options.window );
+  var date_windows = get_date_windows( start_end_dates, 1 /*options.window*/);
   debug( 'date_windows', date_windows);
   debug('get_traffic', orgs);
   (orgs||[]).forEach( function( org ) {
@@ -166,6 +167,7 @@ function get_traffic( orgs ) {
 }
 
 function get_org_env_window_traffic_promises( org_env_window_options ) {
+  "use strict";
   debug('get_org_env_window_traffic_promises', mask(org_env_window_options, 'qs,stat'));
   var org_env_window_traffic_promise = (org_env_window_options||[]).map( throat( 10, function( org_env_window_option ) {
     debug('cURL command',  generatecURL(org_env_window_option) );
@@ -173,10 +175,7 @@ function get_org_env_window_traffic_promises( org_env_window_options ) {
         .then( function( res_array ) {
           org_env_window_option.stat.traffic = rename_message_count_metric_name( JSON.parse(res_array) ); 
 	        return org_env_window_option.stat;
-        } )
-/*        .catch( function(err) {
-          throw new Error("Error calling API " + generatecURL(org_env_window_option) + err.message);
-        });*/
+        } );
   }) );
   return org_env_window_traffic_promise;
 }
