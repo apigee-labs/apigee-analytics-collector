@@ -63,10 +63,11 @@ $ apigee-analytics-forwarder export traffic --include_orgs abcde -p $ae_password
 --apigee_analytics_client_id $apigee_analytics_client_id --apigee_analytics_secret $apigee_analytics_secret -S
 ```
 
-Up to this point, no data has been forwarded to Apigee and you're basically looking at the data that is actually forwarded to Apigee. Therefore, please ensure to remove `-S` flag to forward data. Also note, that no sensitive data is transmitted throughout this process.
+Up to this point, because apigee-analytics-forwarder was run with `-S` flag, so no data has been forwarded to Apigee, what you actually see in the output of the data that is about to be transmited to Apigee when the forwarder runs without `-S` flag. Therefore, please ensure to remove `-S` flag to forward data. Also note, that no sensitive data is transmitted throughout this process.
 
 ##### Now, let's forward data
-To forward data to Apigee remove `-S` or `--standard_output` flag.
+To forward data to Apigee run the forwarder `-S` or `--standard_output` flags. A successful data transmission will result in a payload like one below:
+
 ```bash
 $ apigee-analytics-forwarder export traffic --include_orgs abcde -p $ae_password --apigee_mgmt_api_uri https://api.enterprise.apigee.com/v1 --apigee_mgmt_api_email $ae_username \
 --apigee_analytics_client_id $apigee_analytics_client_id --apigee_analytics_secret $apigee_analytics_secret
@@ -97,14 +98,14 @@ It is highly recommended to leverage a job scheduler to execute this job once on
 
 ### References
 
-##### Debug mode
+##### Debug or verbose mode
 This tools comes enabled with debug module. This is particularly useful to troubleshoot or review what the tool does behind scenes. 
 
-To enable debug mode prefix the command with `DEBUG=*` like the command below:
+To enable debug/verbose mode prefix the command with `-v` like the command below:
 
 ```bash
-$ DEBUG=* apigee-analytics-forwarder export traffic --include_orgs abcde -p $ae_password --apigee_mgmt_api_uri https://api.enterprise.apigee.com/v1 --apigee_mgmt_api_email $ae_username \
---apigee_analytics_client_id $apigee_analytics_client_id --apigee_analytics_secret $apigee_analytics_secret
+$ apigee-analytics-forwarder export traffic --include_orgs abcde -p $ae_password --apigee_mgmt_api_uri https://api.enterprise.apigee.com/v1 --apigee_mgmt_api_email $ae_username \
+--apigee_analytics_client_id $apigee_analytics_client_id --apigee_analytics_secret $apigee_analytics_secret -v
 ```
 
 
