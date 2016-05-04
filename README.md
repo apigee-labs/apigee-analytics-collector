@@ -7,14 +7,6 @@ This is a tool for forwarding analytics data from Edge to Apigee Analytics. It l
 ##### Requirements
 NPM 2.x or greater and Node.js 4.x.
 
-##### Directly From Repo
-```javascript
-$ git clone https://github.com/apigee/apigee-analytics-forwarder.git
-$ cd apigee-analytics-forwarder
-$ sudo npm install -g
-```
-**NOTE**: To update to the latest release, execute `git pull` followed by `sudo npm uninstall -g` and `sudo npm install -g`. 
-
 ##### From NPM
 This method is available once the team finishes testing.
 
@@ -97,6 +89,15 @@ It is highly recommended to leverage a job scheduler to execute this job once on
  - [ ] Support CLI Replay capabilities from saved files.
 
 ### References
+
+##### Install From Repo
+```javascript
+$ git clone https://github.com/apigee/apigee-analytics-forwarder.git
+$ cd apigee-analytics-forwarder
+$ sudo npm install -g
+```
+**NOTE**: To update to the latest release, execute `git pull` followed by `sudo npm uninstall -g` and `sudo npm install -g`. 
+
 
 #### API
 
