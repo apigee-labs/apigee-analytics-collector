@@ -13,14 +13,14 @@ NPM 2.x or greater and Node.js 4.x.
 2. **apigee_mgmt_api_email** This account requires access to open `/stats api` 
 3. **apigee_mgmt_api_password**
 4. **apigee_analytics_client_id** please submit a ticket with Apigee Support to obtain apigee_analytics_client_id and apigee_analytics_secret
-5. **apigee_analytics_secret****
+5. **apigee_analytics_secret**
 
-##### From NPM
-This method is available once the team finishes testing.
+##### Installation using NPM
+apigee-analytics-forwarded is available from NPM. The following command will install the tool:
 
-`npm install -g apigee-analytics-cli`
+`npm install -g apigee-analytics-forwarder`
 
-*NOTE*: The `-g` option places the apigee-analytics-cli command in your PATH. On "\*nix"-based machines, `sudo` may be required with the `-g` option. If you do not use `-g`, then you need to add the apigee-analytics-cli command to your PATH manually. Typically, the `-g` option places modules in: `/usr/local/lib/node_modules/apigee-analytics-cli` on *nix-based machines.
+*NOTE*: The `-g` option places the apigee-analytics-forwarder command in your PATH. On "\*nix"-based machines, `sudo` may be required with the `-g` option. If you do not use `-g`, then you need to add the apigee-analytics-cli command to your PATH manually. Typically, the `-g` option places modules in: `/usr/local/lib/node_modules/apigee-analytics-cli` on *nix-based machines.
 
 #### Parameters
 
@@ -36,7 +36,6 @@ $ apigee-analytics-forwarder export traffic --help
     -h, --help                                                     output usage information
     -D, --dimension <dimension>                                    The traffic dimension to collect. Valid dimensions: apiproducts, developer, apps, apiproxy(default)
     -d, --days <days>                                              The number of days to collect in retrograde. 3 by default
-    -w, --window <window>                                          The number days to collect per request.  For example, you can collect a month of traffic one day at a time, 3 days at a time or 'N' days at a time.  Using this results in shorter-lived AX requests and can be used to reduce timeouts from AX API. 3 by default
     -m, --apigee_mgmt_api_uri <apigee_mgmt_api_uri>                URL to management API
     -u, --apigee_mgmt_api_email <apigee_mgmt_api_email>            Email registered on the Management API. See .env file to setup default value
     -p, --apigee_mgmt_api_password <apigee_mgmt_api_password>      Password associated to the management api email account
@@ -61,16 +60,16 @@ $ apigee-analytics-forwarder export traffic --help
 For instance, here's the command to retrieve traffic data and standard output print from `abcde` org for the last three days:
 ```bash
 $ apigee-analytics-forwarder export traffic --include_orgs abcde -p $ae_password --apigee_mgmt_api_uri https://api.enterprise.apigee.com/v1 --apigee_mgmt_api_email $ae_username \
---apigee_analytics_api_url https://nucleus-api-test.apigee.com/v1/apigee-analytics-cli-api/traffic/orgs --apigee_analytics_client_id $apigee_analytics_client_id \
---apigee_analytics_secret $apigee_analytics_secret -S
+--apigee_analytics_client_id $apigee_analytics_client_id --apigee_analytics_secret $apigee_analytics_secret -S
 ```
 
-##### Let's forward data
+Up to this point, no data has been forwarded to Apigee and you're basically looking at the data that is actually forwarded to Apigee. Therefore, please ensure to remove `-S` flag to forward data. Also note, that no sensitive data is transmitted throughout this process.
+
+##### Now, let's forward data
 To forward data to Apigee remove `-S` or `--standard_output` flag.
 ```bash
 $ apigee-analytics-forwarder export traffic --include_orgs abcde -p $ae_password --apigee_mgmt_api_uri https://api.enterprise.apigee.com/v1 --apigee_mgmt_api_email $ae_username \
---apigee_analytics_api_url https://nucleus-api-test.apigee.com/v1/apigee-analytics-cli-api/traffic/orgs --apigee_analytics_client_id $apigee_analytics_client_id \
---apigee_analytics_secret $apigee_analytics_secret
+--apigee_analytics_client_id $apigee_analytics_client_id --apigee_analytics_secret $apigee_analytics_secret
 [
   {
     "org": "nucleus",
