@@ -149,7 +149,8 @@ function get_traffic( orgs ) {
             var _options = get_base_options( options, ['/organizations', org.org, '/environments/', env, '/stats/', options.dimension ], {
               'select': 'sum(message_count)',
               'timeRange': date_window.start_date_str.concat('~').concat(date_window.end_date_str),
-              'timeUnit': options.time_unit
+              'timeUnit': options.time_unit,
+              'limit': 1000000
             } );
             _options.stat = { org: org.org, env: env,
               time_range_start: date_window.start_date_str,
