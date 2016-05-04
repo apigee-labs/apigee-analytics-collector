@@ -97,6 +97,17 @@ It is highly recommended to leverage a job scheduler to execute this job once on
 
 ### References
 
+##### Debug mode
+This tools comes enabled with debug module. This is particularly useful to troubleshoot or review what the tool does behind scenes. 
+
+To enable debug mode prefix the command with `DEBUG=*` like the command below:
+
+```bash
+$ DEBUG=* apigee-analytics-forwarder export traffic --include_orgs abcde -p $ae_password --apigee_mgmt_api_uri https://api.enterprise.apigee.com/v1 --apigee_mgmt_api_email $ae_username \
+--apigee_analytics_client_id $apigee_analytics_client_id --apigee_analytics_secret $apigee_analytics_secret
+```
+
+
 ##### Install From Repo
 ```javascript
 $ git clone https://github.com/apigee/apigee-analytics-forwarder.git
