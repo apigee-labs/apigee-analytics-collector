@@ -7,6 +7,14 @@ This is a tool for forwarding analytics data from Edge to Apigee Analytics. It l
 ##### Requirements
 NPM 2.x or greater and Node.js 4.x.
 
+**The following information is required to forward traffic data to Apigee:**
+
+1. **apigee_mgmt_api_uri** This can be obtained from your Apigee Administrator e.g. `https://{hostname}/v1`
+2. **apigee_mgmt_api_email** This account requires access to open `/stats api` 
+3. **apigee_mgmt_api_password**
+4. **apigee_analytics_client_id** **please submit a ticket with Apigee Support to obtain apigee_analytics_client_id and apigee_analytics_secret****
+5. apigee_analytics_secret **
+
 ##### From NPM
 This method is available once the team finishes testing.
 
