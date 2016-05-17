@@ -16,6 +16,8 @@ NPM 2.x or greater and Node.js 4.x.
 5. **apigee_analytics_secret**
 
 ##### Installation using NPM
+Unzip `apigee-analytics-forwarder_*.zip` file, cd into the folder where it was expanded and continue with direction below.
+
 apigee-analytics-forwarded is available from NPM. The following command will install the tool:
 
 `npm install -g apigee-analytics-forwarder`
@@ -109,7 +111,7 @@ $ apigee-analytics-forwarder export traffic --include_orgs abcde -p $ae_password
 ```
 
 
-##### Install From Repo
+##### Install From Repo - Deprecated (no longer publicly available)
 ```javascript
 $ git clone https://github.com/apigee/apigee-analytics-forwarder.git
 $ cd apigee-analytics-forwarder
