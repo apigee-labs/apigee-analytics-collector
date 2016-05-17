@@ -16,11 +16,11 @@ NPM 2.x or greater and Node.js 4.x.
 5. **apigee_analytics_secret**
 
 ##### Installation using NPM
-Unzip `apigee-analytics-forwarder_*.zip` file, cd into the folder where it was expanded and continue with direction below.
-
-apigee-analytics-forwarded is available from NPM. The following command will install the tool:
-
-`npm install -g apigee-analytics-forwarder`
+Unzip `apigee-analytics-forwarder_*.zip` file, cd into the folder where it was expanded and install with NPM:
+```bash
+cd apigee-analytics-forwarder
+npm install -g apigee-analytics-forwarder
+```
 
 *NOTE*: The `-g` option places the apigee-analytics-forwarder command in your PATH. On "\*nix"-based machines, `sudo` may be required with the `-g` option. If you do not use `-g`, then you need to add the apigee-analytics-cli command to your PATH manually. Typically, the `-g` option places modules in: `/usr/local/lib/node_modules/apigee-analytics-cli` on *nix-based machines.
 
