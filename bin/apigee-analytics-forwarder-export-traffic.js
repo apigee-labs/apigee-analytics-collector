@@ -20,10 +20,11 @@ program
     .option("-D, --dimension <dimension>", "The traffic dimension to collect. Valid dimensions: apiproducts, developer, apps, apiproxy(default)", /^(apiproducts|developer|apps|apiproxy)$/i, 'apiproxy')
     .option("-d, --days <days>", "The number of days to collect in retrograde. 3 by default", 3, parseInt)
 
-    // removed because of bug in windows bigger than 24 hours in stats api
-    /*.option("-w, --window <window>", 'The number days to collect per request.  For example, you can collect a month ' +
+    // added back
+    // it was removed because of bug in windows bigger than 24 hours in stats api, which can be fixed by giving large limit. e.g. 1'000'000 records
+    .option("-w, --window <window>", 'The number days to collect per request.  For example, you can collect a month ' +
                                      'of traffic one day at a time, 3 days at a time or \'N\' days at a time.  Using this ' +
-                                     'results in shorter-lived AX requests and can be used to reduce timeouts from AX API. 3 by default', 1, parseInt)*/
+                                     'results in shorter-lived AX requests and can be used to reduce timeouts from AX API. 3 by default', 3, parseInt)
     .option("-m, --apigee_mgmt_api_uri <apigee_mgmt_api_uri>", "URL to management API")
     .option("-u, --apigee_mgmt_api_email <apigee_mgmt_api_email>", "Email registered on the Management API. See .env file to setup default value")
     .option("-p, --apigee_mgmt_api_password <apigee_mgmt_api_password>", "Password associated to the management api email account")
@@ -139,7 +140,7 @@ function get_traffic( orgs ) {
   var org_env_window_options = [];
   var start_end_dates = get_start_end_dates(options);
   debug( 'start_end_dates', start_end_dates);
-  var date_windows = get_date_windows( start_end_dates, 1 /*options.window*/);
+  var date_windows = get_date_windows( start_end_dates, options.window);
   debug( 'date_windows', date_windows);
   debug('get_traffic', orgs);
   (orgs||[]).forEach( function( org ) {
