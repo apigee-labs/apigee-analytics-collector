@@ -224,7 +224,7 @@ function get_date_windows( start_end_dates, window ) {
   debug('window', window);
   debug('_start_date', _start_date);
   do {
-    var _window_end_date = new Date((new Date(_start_date)).setDate(_start_date.getDate() + parseInt(window)));
+    var _window_end_date = new Date((new Date(_start_date)).setDate(_start_date.getDate() + Math.max(parseInt(window), 1)));
     debug('_window_end_date', _window_end_date);
     if (_window_end_date > end_date) _window_end_date = end_date;
     date_windows.push( {
