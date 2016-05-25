@@ -151,7 +151,7 @@ function get_traffic( orgs ) {
               'select': 'sum(message_count)',
               'timeRange': date_window.start_date_str.concat('~').concat(date_window.end_date_str),
               'timeUnit': options.time_unit,
-              'limit': 1000000
+              'limit': 14400
             } );
             _options.stat = { org: org.org, env: env,
               time_range_start: date_window.start_date_str,
