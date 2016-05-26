@@ -68,7 +68,7 @@ $ apigee-analytics-forwarder export traffic --include_orgs abcde -p $ae_password
 Up to this point, because apigee-analytics-forwarder was run with `-S` flag, so no data has been forwarded to Apigee, what you actually see in the output of the data that is about to be transmited to Apigee when the forwarder runs without `-S` flag. Therefore, please ensure to remove `-S` flag to forward data. Also note, that no sensitive data is transmitted throughout this process.
 
 ##### Now, let's forward data
-To forward data to Apigee run the forwarder `-S` or `--standard_output` flags. A successful data transmission will result in a payload like one below:
+To forward data to Apigee run the forwarder without the `-S` or `--standard_output` flags. A successful data transmission will result in a payload like one below:
 
 ```bash
 $ apigee-analytics-forwarder export traffic --include_orgs abcde -p $ae_password --apigee_mgmt_api_uri https://api.enterprise.apigee.com/v1 --apigee_mgmt_api_email $ae_username \

@@ -65,16 +65,16 @@ else {
 }
 
 function extract_traffic(options) {
-  debug('options.run_as_standalone_cronjob', options.run_as_standalone_cronjob);
   get_include_orgs_promise(options)
-    .then( get_orgs.bind({ options: options } ) )
-    .then( get_without_excluded_orgs.bind( { options: options } ) )
-    .then( get_orgs_with_envs.bind({ options: options } ) )
-    .then( exclude_envs_from_orgs.bind( { options: options } ) )
-    .then( get_traffic.bind( { options: options } ) )
-    .then( post_or_save_traffic.bind( { options: options } ) )
-    .catch( function(err) {
-      console.log( err.stack );
+    .then(get_orgs.bind({ options: options } ))
+    .then(get_without_excluded_orgs.bind( { options: options } ))
+    .then(get_orgs_with_envs.bind({ options: options } ))
+    .then(exclude_envs_from_orgs.bind( { options: options } ))
+    .then(get_traffic.bind( { options: options } ))
+    .then(post_or_save_traffic.bind( { options: options } ))
+    .catch(function(err) {
+      console.log( err );
+      debug(err.stack);
       process.exit(1);
     });
 }
@@ -103,7 +103,6 @@ function post_traffic( traffic_array, options ){
   debug('secret', secret);
   var apigee_analytics_api_url = process.env.apigee_analytics_api_url || options.apigee_analytics_api_url;
   if( !client_id || !secret ) throw new Error('apigee_analytics_client_id or apigee_analytics_secret are required.');
-  //if( !apigee_analytics_api_url ) throw new Error('apigee_analytics_api_url is required');
   var traffic_array_sent_p = (traffic_array||[]).map( throat( 10, function( org_env_traffic ) {
     var _options = {
       method: 'POST',
@@ -118,6 +117,7 @@ function post_traffic( traffic_array, options ){
     debug('post_traffic cURL', generatecURL(_options));
     return request( _options )
         .catch( function(err) {
+          debug(err);
           throw new Error("Error calling API " + generatecURL(_options) + err.message);
         });
   }));
@@ -162,7 +162,6 @@ function get_traffic( orgs ) {
         });
       }
   );
-  debug('get_traffic', org_env_window_options);
   var org_env_window_traffic_promise = get_org_env_window_traffic_promises( org_env_window_options );
   return org_env_window_traffic_promise;
 }
@@ -176,12 +175,6 @@ function get_org_env_window_traffic_promises( org_env_window_options ) {
           debug("all_pages_traffic_stats", JSON.stringify(data));
           return data;
         });
-
-    /*    return request( org_env_window_option )
-        .then( function( res_array ) {
-          org_env_window_option.stat.traffic = rename_message_count_metric_name( JSON.parse(res_array) ); 
-	        return org_env_window_option.stat;
-        } );*/
   }) );
   return org_env_window_traffic_promise;
 }
@@ -196,13 +189,15 @@ function get_all_traffic_for_page_offset(org_env_window_option, offset) {
         .then( function(res_array) {
           var parsed_response = JSON.parse(res_array);
 
-          // clone org_env_window_option
-          var org_env_window_option_t = JSON.parse(JSON.stringify(org_env_window_option));
-          org_env_window_option_t.stat.traffic = rename_message_count_metric_name(parsed_response);
-          all_pages_traffic_stats.push(org_env_window_option_t.stat);
-
-          // if there are dimensions within environments, check the next page by increasing offset
+          debug("parsed_response.environments", parsed_response.environments);
+          debug("check next,", parsed_response.environments.filter(function(env){return env.dimensions ? true : false; }));
+          // if there are dimensions within environments, check next page by increasing offset
           if (parsed_response.environments.filter(function(env){return env.dimensions ? true : false; }).length > 0) {
+
+            // clone org_env_window_option
+            var org_env_window_option_t = JSON.parse(JSON.stringify(org_env_window_option));
+            org_env_window_option_t.stat.traffic = rename_message_count_metric_name(parsed_response);
+            all_pages_traffic_stats.push(org_env_window_option_t.stat);
             debug('requesting next page');
             return get_traffic_for_page_offset(org_env_window_option, offset + 14400);
           } else{
@@ -310,10 +305,11 @@ function get_orgs_with_envs( orgs ) {
     var promises = (orgs||[]).map( throat( 10, function( org ) {
       var _options = get_base_options( options, ['/organizations/', org, '/environments'] );
       debug('get_orgs_with_envs', generatecURL(_options));
-      return request( _options )
-                .catch( function(err) {
-                  throw new Error("Error calling API " + generatecURL(_options) + err.message);
-                });
+      return request(_options)
+          .catch(function(err) {
+            debug(err);
+            throw new Error("Error calling API " + generatecURL(_options) + err.message);
+          });
     } ) );
     return Promise.all(promises)
         .then( function( envs ) {
