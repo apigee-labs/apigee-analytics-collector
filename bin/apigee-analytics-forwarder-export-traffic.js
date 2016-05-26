@@ -76,7 +76,6 @@ function extract_traffic(options) {
     .catch( function(err) {
       console.log( err.stack );
       process.exit(1);
-      //throw err;
     });
 }
 
@@ -84,6 +83,7 @@ function post_or_save_traffic(org_env_traffic_promises ) {
   var options = this.options;
   return Promise.all( org_env_traffic_promises )
     .then( function( org_env_traffic_array ) {
+      org_env_traffic_array = [].concat.apply([], org_env_traffic_array);
       var org_env_traffic_array_str = JSON.stringify({"entities": org_env_traffic_array});
       if (options.output) {
         debug('options.output',options.output);
@@ -140,8 +140,8 @@ function get_traffic( orgs ) {
   var org_env_window_options = [];
   var start_end_dates = get_start_end_dates(options);
   debug( 'start_end_dates', start_end_dates);
-  var date_windows = get_date_windows( start_end_dates, options.window);
-  debug( 'date_windows', date_windows);
+  var date_windows = get_date_windows(start_end_dates, options.window);
+  debug('date_windows', date_windows);
   debug('get_traffic', orgs);
   (orgs||[]).forEach( function( org ) {
     (org.envs||[]).forEach( function( env ) {
@@ -151,13 +151,12 @@ function get_traffic( orgs ) {
               'select': 'sum(message_count)',
               'timeRange': date_window.start_date_str.concat('~').concat(date_window.end_date_str),
               'timeUnit': options.time_unit,
-              'limit': 14400
+              'limit': 14400,
+              'offset': 0
             } );
             _options.stat = { org: org.org, env: env,
               time_range_start: date_window.start_date_str,
               time_range_end: date_window.end_date_str };
-            //return _options;
-            //org_env_window_options =
             org_env_window_options.push( _options );
           });
         });
@@ -172,14 +171,46 @@ function get_org_env_window_traffic_promises( org_env_window_options ) {
   "use strict";
   debug('get_org_env_window_traffic_promises', mask(org_env_window_options, 'qs,stat'));
   var org_env_window_traffic_promise = (org_env_window_options||[]).map( throat( 10, function( org_env_window_option ) {
-    debug('cURL command',  generatecURL(org_env_window_option) );
-    return request( org_env_window_option )
+    return get_all_traffic_for_page_offset(org_env_window_option, 0)
+        .then(function(data){
+          debug("all_pages_traffic_stats", JSON.stringify(data));
+          return data;
+        });
+
+    /*    return request( org_env_window_option )
         .then( function( res_array ) {
           org_env_window_option.stat.traffic = rename_message_count_metric_name( JSON.parse(res_array) ); 
 	        return org_env_window_option.stat;
-        } );
+        } );*/
   }) );
   return org_env_window_traffic_promise;
+}
+
+function get_all_traffic_for_page_offset(org_env_window_option, offset) {
+  "use strict";
+  var all_pages_traffic_stats = [];
+  function get_traffic_for_page_offset(org_env_window_option, offset) {
+    org_env_window_option.qs.offset = offset;
+    debug('cURL command',  generatecURL(org_env_window_option) );
+    return request( org_env_window_option )
+        .then( function(res_array) {
+          var parsed_response = JSON.parse(res_array);
+
+          // clone org_env_window_option
+          var org_env_window_option_t = JSON.parse(JSON.stringify(org_env_window_option));
+          org_env_window_option_t.stat.traffic = rename_message_count_metric_name(parsed_response);
+          all_pages_traffic_stats.push(org_env_window_option_t.stat);
+
+          // if there are dimensions within environments, check the next page by increasing offset
+          if (parsed_response.environments.filter(function(env){return env.dimensions ? true : false; }).length > 0) {
+            debug('requesting next page');
+            return get_traffic_for_page_offset(org_env_window_option, offset + 14400);
+          } else{
+            return all_pages_traffic_stats;
+          }
+        } );
+  }
+  return get_traffic_for_page_offset(org_env_window_option, offset);
 }
 
 function rename_message_count_metric_name( stats ) {
