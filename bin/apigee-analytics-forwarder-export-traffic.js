@@ -34,7 +34,7 @@ program
     .option("-e, --exclude_envs <items>", 'Exclude envs from this list', list)
     .option("-o, --output <path>", "Path and filename to save output")
     .option("-s, --time_range_start <time_range_start>", 'Time range start for querying traffic stats e.g. "03/01/2016 00:00"')
-    .option("-e, --time_range_end <time_range_end>", 'Time range end for querying traffic stats e.g. "04/01/2016 24:00"')
+    .option("-z, --time_range_end <time_range_end>", 'Time range end for querying traffic stats e.g. "04/01/2016 24:00"')
     .option("-t, --time_unit <time_unit>", 'Time unit for traffic stats. Default week. Default units by hour. Valid time units: second, minute, hour, day, week', /^(second|minute|hour|day|week)$/i, 'hour')
     .option("-U, --apigee_analytics_api_url <apigee_analytics_api_url>", "apigee analytics URL to submit the traffic output. Send a request to 360@apigee.com to request credentials.", "https://nucleus-api-test.apigee.com/v1/apigee-analytics-cli-api/traffic/orgs")
     .option("-S, --standard_output", "output through the terminal (stdout).")
@@ -100,7 +100,6 @@ function post_or_save_traffic(org_env_traffic_promises ) {
 function post_traffic( traffic_array, options ){
   var client_id = options.apigee_analytics_client_id || process.env.apigee_analytics_client_id;
   var secret = options.apigee_analytics_secret || process.env.apigee_analytics_secret;
-  debug('secret', secret);
   var apigee_analytics_api_url = process.env.apigee_analytics_api_url || options.apigee_analytics_api_url;
   if( !client_id || !secret ) throw new Error('apigee_analytics_client_id or apigee_analytics_secret are required.');
   var traffic_array_sent_p = (traffic_array||[]).map( throat( 10, function( org_env_traffic ) {
