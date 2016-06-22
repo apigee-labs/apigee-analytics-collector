@@ -17,7 +17,7 @@ var program = require('commander'),
 
 program
     .description('Export data from the management API')
-    .option("-D, --dimension <dimension>", "The traffic dimension to collect. Valid dimensions: apiproducts, developer, apps, apiproxy(default)", /^(apiproducts|developer|apps|apiproxy)$/i, 'apiproxy')
+    .option("-D, --dimension <dimension>", "The traffic dimension to collect. Valid dimensions: apiproducts, devs, apps, apis(default)", /^(apiproducts|devs|apps|apis)$/i, 'apis')
     .option("-d, --days <days>", "The number of days to collect in retrograde. 3 by default", 3, parseInt)
 
     // added back
@@ -36,7 +36,7 @@ program
     .option("-s, --time_range_start <time_range_start>", 'Time range start for querying traffic stats e.g. "03/01/2016 00:00"')
     .option("-z, --time_range_end <time_range_end>", 'Time range end for querying traffic stats e.g. "04/01/2016 24:00"')
     .option("-t, --time_unit <time_unit>", 'Time unit for traffic stats. Default week. Default units by hour. Valid time units: second, minute, hour, day, week', /^(second|minute|hour|day|week)$/i, 'hour')
-    .option("-U, --apigee_analytics_api_url <apigee_analytics_api_url>", "apigee analytics URL to submit the traffic output. Send a request to 360@apigee.com to request credentials.", "https://nucleus-api-test.apigee.com/v1/apigee-analytics-cli-api/traffic/orgs")
+    .option("-U, --apigee_analytics_api_url <apigee_analytics_api_url>", "apigee analytics URL to submit the traffic output. Send a request to 360@apigee.com to request credentials.", "http://localhost:10010/traffic/orgs") //"https://nucleus-api-test.apigee.com/v1/apigee-analytics-cli-api/traffic/orgs")
     .option("-S, --standard_output", "output through the terminal (stdout).")
     .option("-c, --apigee_analytics_client_id <apigee_analytics_client_id>", "cliend_id used to authenticate against apigee analytics api")
     .option("-r, --apigee_analytics_secret <apigee_analytics_secret>", "secret used to authenticate againts apigee analytics api")
@@ -97,7 +97,7 @@ function post_or_save_traffic(org_env_traffic_promises ) {
     });
 }
 
-function post_traffic( traffic_array, options ){
+function post_traffic(traffic_array, options) {
   var client_id = options.apigee_analytics_client_id || process.env.apigee_analytics_client_id;
   var secret = options.apigee_analytics_secret || process.env.apigee_analytics_secret;
   var apigee_analytics_api_url = process.env.apigee_analytics_api_url || options.apigee_analytics_api_url;
@@ -105,7 +105,7 @@ function post_traffic( traffic_array, options ){
   var traffic_array_sent_p = (traffic_array||[]).map( throat( 10, function( org_env_traffic ) {
     var _options = {
       method: 'POST',
-      uri: urljoin( apigee_analytics_api_url, org_env_traffic.org ),
+      uri: urljoin( apigee_analytics_api_url, org_env_traffic.org, org_env_traffic.dimension ),
       body: org_env_traffic.traffic,
       json: true,
       headers: {
@@ -155,7 +155,9 @@ function get_traffic( orgs ) {
             } );
             _options.stat = { org: org.org, env: env,
               time_range_start: date_window.start_date_str,
-              time_range_end: date_window.end_date_str };
+              time_range_end: date_window.end_date_str,
+              dimension: options.dimension
+            };
             org_env_window_options.push( _options );
           });
         });
@@ -374,7 +376,7 @@ function generatecURL(options) {
   body = JSON.stringify(body); //only in node module
   if (body !== '"{}"' && method !== 'GET' && method !== 'DELETE') {
     //curl - add in the json obj
-    //curl += " -d '" + body + "'";
+    curl += " -d '" + body + "'";
   }
   //log the curl command to the console
   return curl;
