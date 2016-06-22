@@ -36,7 +36,7 @@ program
     .option("-s, --time_range_start <time_range_start>", 'Time range start for querying traffic stats e.g. "03/01/2016 00:00"')
     .option("-z, --time_range_end <time_range_end>", 'Time range end for querying traffic stats e.g. "04/01/2016 24:00"')
     .option("-t, --time_unit <time_unit>", 'Time unit for traffic stats. Default week. Default units by hour. Valid time units: second, minute, hour, day, week', /^(second|minute|hour|day|week)$/i, 'hour')
-    .option("-U, --apigee_analytics_api_url <apigee_analytics_api_url>", "apigee analytics URL to submit the traffic output. Send a request to 360@apigee.com to request credentials.", "http://localhost:10010/traffic/orgs") //"https://nucleus-api-test.apigee.com/v1/apigee-analytics-cli-api/traffic/orgs")
+    .option("-U, --apigee_analytics_api_url <apigee_analytics_api_url>", "apigee analytics URL to submit the traffic output. Send a request to 360@apigee.com to request credentials.", "https://nucleus-api-test.apigee.com/v1/apigee-analytics-cli-api/traffic/orgs") //"http://localhost:10010/traffic/orgs")
     .option("-S, --standard_output", "output through the terminal (stdout).")
     .option("-c, --apigee_analytics_client_id <apigee_analytics_client_id>", "cliend_id used to authenticate against apigee analytics api")
     .option("-r, --apigee_analytics_secret <apigee_analytics_secret>", "secret used to authenticate againts apigee analytics api")
