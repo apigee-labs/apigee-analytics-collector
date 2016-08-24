@@ -94,10 +94,6 @@ You're done. Check other arguments to customize your workflow. And please be min
 
 It is highly recommended to leverage a job scheduler to execute this job once on a daily basis. Cron and Windows Task Scheduler respectively for *nix and Windows systems are suggested.
 
-#### TODO
-
- - [ ] Support CLI Replay capabilities from saved files.
-
 ### References
 
 ##### Debug or verbose mode
@@ -199,17 +195,82 @@ This is a sample snippet of data sent extracted by this tool. In this sample, da
 In order to forward traffic to Apigee, this CLI tool requires access to [Apigee-Analytics-Forwarder-API](https://gitlab.apigee.com/nucleus/apigee-analytics-cli-api).
 
 #### FAQ
-**Is any proprietary information collected?**
-No. Apigee will not collect any proprietary or user identifiable data. All data is visible and can be recorded locally.
+**When does this utility send data to Apigee?**
+The Analytics collector is a command line utility to generate and report API usage. Private Cloud customers decide when they want to run this utility. The whole process could be automated by scheduling a cron-job that periodically report the information back to Apigee. It’s recommended to run this job at least once a day.
 
-**Is the connection with Apigee secure?**
-Yes. The solution will connect with Apigee via secure HTTPs service run by Apigee secured with Basic Auth.
+**Can I affect the data transmission schedule? **
+Yes. You can schedule a job or manually execute the command to report the usage information. 
 
-**What type of overhead is incurred?**
-There is very little processing overhead on systems and to Edge Org.
 
-**What type of data is transmitted to Apigee?**
-See sample above.
+**If the data transmission is interrupted, does it retry? **
+No. There is no retry mechanism built into the utility. If the utility fails to transmit the data, you will notice an error.
+
+**Is there a dead-letter queue?**
+No.
+
+**Where should this utility be executed? from where is the data sent?  Which Edge node? **
+Customers can run the utility from any server that has access to Edge components. They can also install & run this utility from any Edge node, preferably the Management Server.  Executing this utility does not impact the run time traffic. However it queries the Analytics component using Edge management APIs.  Hence it’s recommended to run during non-peak hours. Also note, this utility requires the Internet access to report the data back to Apigee.
+
+**What ports does it use?  What outbound firewall settings do we need to change? **
+This utility makes use of the management APIs to collect usage information from an Edge environment. Usually these ports are configured during Edge installation. This utility requires the Internet access to report the data back to Apigee.  For forwarding analytics back to Apigee, it uses port 443.
+
+**Does this tool securely transmit usage report back to Apigee?**
+Yes. This utility uses HTTPs to transmit the usage information back to Apigee. HTTPs offers transport layer security.
+
+**What is the volume of data buffered and sent?  Is the data wiped out after transmission?**
+This utility does not store any data by default. If you use the “-s” option in CLI, then the information is printed on the console. 
+
+**What if my Edge environment does have access to Internet? How does this utility help?**
+This utility uses Apigee management APIs to report usage information. If your Edge installation can’t be reached from outside or does not have access to internet, use the utility with “-s” option to generate output on the console. Copy the output and invoke the Apigee Nucleus APIs from a system that has Internet access. 
+
+
+**How do you distinguish between production and non-prod nodes?**
+This utility captures the environment details as part of the reporting. Customers will specify the Orgs and Environments from which the data has to be collected. This is configured as part of the CLI command.
+
+**Will I need to set this up on an all-in-one install?**
+No. You can run this utility from any server (or your PC) that has access to internet. As a prerequisite you need to have node.js installed.
+
+**Does it use node.js? What version?  Which npm modules?  Where can I find the list of prerequisites?**
+Yes. NPM 2.x or greater and Node.js 4.x.  You can find additional details about the tool here - https://github.com/apigee-labs/apigee-analytics-forwarder/ 
+
+**What if I don't want to use this script to send this data? How can I disable it?  Will it affect other systems?**
+You are not obligated to use this tool. You could use the management APIs directly, generate the usage report by yourself and invoke Apigee Forwarder API in the cloud to transmit the data yourself. This tool is built to ease that effort. If you still wish do it yourself, please check the README section on the Github for details.
+
+**Is data transmission going to be contractually required?  If so, how am I supposed to set this up in my air gapped environment.**
+Yes. You are required to report the usage information. But you are not obligated to use this tool. If you like to use this tool, but have specific requirements, questions or concerns we will be happy to schedule a call to discuss them.
+ 
+**What benefits do I get by using this utility?**
+This utility is built to help Customers who are required to share the API usage report to Apigee as per contractual agreements. 
+
+**Where should I report bugs/errors that I find this utility?**
+You can raise an issue in Github (https://github.com/apigee-labs/apigee-analytics-forwarder/ )  and we will fix it for you. You can also raise a support ticket with Apigee.
+
+**Who supports this utility?**
+If you run into issues or need help, please raise a support ticket.
+
+**What is the performance impact of running this tool?**
+This is a very lightweight utility that introduces a minimum CPU & memory load on the server. However it’s advised to execute this utility during non-peak hours. You can also schedule to a job to execute this utility on a daily basis. This reduces the query execution time.
+
+**What happens if scheduled job fails?**
+If the scheduled job fails, you will see an error. There is no retry built into this utility. Hence the usage information is not reported to Apigee. You need to fix the scheduler and run again.
+
+**Do we need to run this utility in DMZ ?**
+No. You could run this tool directly on the Edge management server. 
+	
+**I don’t want to invest in extra hardware. Can I run this tool in any of the apigee nodes?**
+No, you don’t have to. This is a lightweight node.js based utility that either can be run from your laptop or PC or from an Edge node (like Management Server). 
+
+**Does this tool collect any sensitive information?**
+No. We deeply care about our customer’s data. This utility only reports basic details such as org name, environment name, API proxy name and the API usage information back to Apigee. The README document also has sample data being captured by this tool.
+
+**Does it collect both production and nonproduction traffic?**
+Apigee customers have complete control over this. The CLI (Command Line Interface) gives an option to include or/and exclude specific Edge Organizations and environments for reporting purposes.
+
+**Is there an option not to report usage information of specific API proxies?**
+No. At this time, the utility reports usage information of all API proxies within the selected Org and Environment. 
+
+**How do I get access to this utility?** 
+You can download the Analytic collector utility from https://github.com/apigee-labs/apigee-analytics-forwarder/  The README describes the steps configure and run the utility.
 
 **Is there a way to submit data manually to Apigee Forwarder API?**
 Absolutely. apigee-analytics-forwarder tool was designed to automate the work of extracting and posting the data to Apigee. However, analytics data from Edge can be exported by sending it to the API directly.
@@ -231,7 +292,6 @@ curl -X GET -u {apigee_mgmt_api_email}:{apigee_mgmt_api_password} https://api.en
 There are a few options here:
 - **1. Use another box that has access to the external world and the private cloud Mgmt. API** Given that apigee-analytics-forwarder talks to the Mgmt. API, the tool can retrieve analytics data from any box with access to mgmt. api and forward it to Apigee.
 - **2. Send data directly through apigee-analytics-forwarder API** Follow the answer in FAQ for the question *Is there a way to submit data manually to Apigee Forwarder API?*
-- ~~3. Export analytics data as a file and replay them from a box with external access (TBD) Pending until forwarder support replaying-file capabilities. Kept here to track the need for it. Captured in TODO section. This is the least preferred way as it requires manual work by the user. The forwarding will require two steps: 1) generating the files from a box with access to the management api and save the output as a file, 2) copy files generated from step one to box with external access, and then 3) run the forwarder tool again from a machine with access to Apigee Analytics Forwarder API and consume files previously exported.~~ 
 
 #### Support
 
