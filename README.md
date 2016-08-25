@@ -231,7 +231,7 @@ This utility captures the environment details as part of the reporting. Customer
 No. You can run this utility from any server (or your PC) that has access to internet. As a prerequisite you need to have node.js installed.
 
 **Does it use node.js? What version?  Which npm modules?  Where can I find the list of prerequisites?**
-Yes. NPM 2.x or greater and Node.js 4.x.  You can find additional details about the tool here - https://github.com/apigee-labs/apigee-analytics-forwarder/ 
+Yes. NPM 2.x or greater and Node.js 4.x.   
 
 **What if I don't want to use this script to send this data? How can I disable it?  Will it affect other systems?**
 You are not obligated to use this tool. You could use the management APIs directly, generate the usage report by yourself and invoke Apigee Forwarder API in the cloud to transmit the data yourself. This tool is built to ease that effort. If you still wish do it yourself, please check the README section on the Github for details.
@@ -243,7 +243,7 @@ Yes. You are required to report the usage information. But you are not obligated
 This utility is built to help Customers who are required to share the API usage report to Apigee as per contractual agreements. 
 
 **Where should I report bugs/errors that I find this utility?**
-You can raise an issue in Github (https://github.com/apigee-labs/apigee-analytics-forwarder/ )  and we will fix it for you. You can also raise a support ticket with Apigee.
+You can raise an issue in Github (https://github.com/apigee-labs/apigee-analytics-forwarder/ ) and we will fix it for you. You can also raise a support ticket with Apigee.
 
 **Who supports this utility?**
 If you run into issues or need help, please raise a support ticket.
@@ -268,9 +268,6 @@ Apigee customers have complete control over this. The CLI (Command Line Interfac
 
 **Is there an option not to report usage information of specific API proxies?**
 No. At this time, the utility reports usage information of all API proxies within the selected Org and Environment. 
-
-**How do I get access to this utility?** 
-You can download the Analytic collector utility from https://github.com/apigee-labs/apigee-analytics-forwarder/  The README describes the steps configure and run the utility.
 
 **Is there a way to submit data manually to Apigee Forwarder API?**
 Absolutely. apigee-analytics-forwarder tool was designed to automate the work of extracting and posting the data to Apigee. However, analytics data from Edge can be exported by sending it to the API directly.
