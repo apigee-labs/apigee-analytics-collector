@@ -190,10 +190,6 @@ This is a sample snippet of data sent extracted by this tool. In this sample, da
 ```
 
 
-#### API
-
-In order to forward traffic to Apigee, this CLI tool requires access to [Apigee-Analytics-Forwarder-API](https://gitlab.apigee.com/nucleus/apigee-analytics-cli-api).
-
 #### FAQ
 **When does this utility send data to Apigee?**
 The Analytics collector is a command line utility to generate and report API usage. Private Cloud customers decide when they want to run this utility. The whole process could be automated by scheduling a cron-job that periodically report the information back to Apigee. It’s recommended to run this job at least once a day.
