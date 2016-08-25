@@ -198,20 +198,20 @@ In order to forward traffic to Apigee, this CLI tool requires access to [Apigee-
 **When does this utility send data to Apigee?**
 The Analytics collector is a command line utility to generate and report API usage. Private Cloud customers decide when they want to run this utility. The whole process could be automated by scheduling a cron-job that periodically report the information back to Apigee. It’s recommended to run this job at least once a day.
 
-**Can I affect the data transmission schedule? **
+**Can I affect the data transmission schedule?**
 Yes. You can schedule a job or manually execute the command to report the usage information. 
 
 
-**If the data transmission is interrupted, does it retry? **
+**If the data transmission is interrupted, does it retry?**
 No. There is no retry mechanism built into the utility. If the utility fails to transmit the data, you will notice an error.
 
 **Is there a dead-letter queue?**
 No.
 
-**Where should this utility be executed? from where is the data sent?  Which Edge node? **
+**Where should this utility be executed? from where is the data sent?  Which Edge node?**
 Customers can run the utility from any server that has access to Edge components. They can also install & run this utility from any Edge node, preferably the Management Server.  Executing this utility does not impact the run time traffic. However it queries the Analytics component using Edge management APIs.  Hence it’s recommended to run during non-peak hours. Also note, this utility requires the Internet access to report the data back to Apigee.
 
-**What ports does it use?  What outbound firewall settings do we need to change? **
+**What ports does it use?  What outbound firewall settings do we need to change?**
 This utility makes use of the management APIs to collect usage information from an Edge environment. Usually these ports are configured during Edge installation. This utility requires the Internet access to report the data back to Apigee.  For forwarding analytics back to Apigee, it uses port 443.
 
 **Does this tool securely transmit usage report back to Apigee?**
