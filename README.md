@@ -1,10 +1,10 @@
 # apigee-analytics-collector
 This is a commandline utility for reporting API traffic volume from a Edge Private Cloud installation to Apigee. Internally utility leverages Edge Management APIs to retrieve and report data to Apigee.
 
-#### <a name="installation"></a>Installation
+## <a name="installation"></a>Installation
 `apigee-analytics-collector` is a node.js module and you can install it using npm.
 
-##### Requirements
+## Requirements
 npm 2.x or greater and node.js 4.x.
 
 **The following information is required to forward traffic data to Apigee:**
@@ -15,7 +15,7 @@ npm 2.x or greater and node.js 4.x.
 4. **apigee_analytics_client_id** please submit a ticket with Apigee Support to obtain apigee_analytics_client_id and apigee_analytics_secret
 5. **apigee_analytics_secret**
 
-##### Installation using npm
+## Installation using npm
 
 ```bash
 npm install apigee-analytics-collector -g
@@ -23,7 +23,7 @@ npm install apigee-analytics-collector -g
 
 *NOTE*: The `-g` option places the apigee-analytics-collector command in your PATH. On "\*nix"-based machines, `sudo` may be required with the `-g` option. If you do not use `-g`, then you need to add the apigee-analytics-cli command to your PATH manually. Typically, the `-g` option places modules in: `/usr/local/lib/node_modules/apigee-analytics-cli` on *nix-based machines.
 
-#### Parameters
+## Parameters
 
 ```bash
 $ apigee-analytics-collector export traffic --help
@@ -56,7 +56,7 @@ $ apigee-analytics-collector export traffic --help
     -v, --verbose                                                  make the operation more talkative
 ```
 
-#### Getting started
+## Getting started
 
 For instance, here's the command to retrieve traffic data and standard output print from `abcde` org for the last three days:
 ```bash
@@ -66,8 +66,8 @@ $ apigee-analytics-collector export traffic --include_orgs abcde -p $ae_password
 
 Up to this point, because apigee-analytics-collector was run with `-S` flag, so no data has been forwarded to Apigee, what you actually see in the output of the data that is about to be transmitted to Apigee when the collector runs without `-S` flag. Therefore, please ensure to remove `-S` flag to forward data. Also, note no sensitive data is transmitted throughout this process.
 
-##### Now, let's forward some data
-To forward data to Apigee run the collector without the `-S` or `--standard_output` flags. A successful data transmission will result in a payload like one below:
+## Report Usage
+To report the usage to Apigee, run the collector without the `-S` or `--standard_output` flags. A successful data transmission will result in a payload like one below:
 
 ```bash
 $ apigee-analytics-collector export traffic --include_orgs abcde -p $ae_password --apigee_mgmt_api_uri https://api.enterprise.apigee.com/v1 --apigee_mgmt_api_email $ae_username \
@@ -89,13 +89,11 @@ $ apigee-analytics-collector export traffic --include_orgs abcde -p $ae_password
 
 You're done. Check other arguments to customize your workflow. And please be mindful of providing large time ranges and windows, by default it is set to 3 full days, which is more than enough to catch up if apigee-analytics-collector stopped running for a few hours.
 
-#### Scheduling
+## Scheduling
 
 It is highly recommended to leverage a job scheduler to execute this job once on a daily basis. Cron and Windows Task Scheduler respectively for *nix and Windows systems are suggested.
 
-### References
-
-##### Debug or verbose mode
+## Debug or verbose mode
 This tool comes enabled with debug module. This is particularly useful to troubleshoot or review what the tool does behind scenes. 
 
 To enable debug/verbose mode prefix the command with `-v` like the command below:
@@ -105,19 +103,10 @@ $ apigee-analytics-collector export traffic --include_orgs abcde -p $ae_password
 --apigee_analytics_client_id $apigee_analytics_client_id --apigee_analytics_secret $apigee_analytics_secret -v
 ```
 
-
-##### Install From Repo - Deprecated (no longer publicly available)
-```bash
-$ git clone https://github.com/apigee/apigee-analytics-forwarder.git
-$ cd apigee-analytics-collector
-$ sudo npm install -g
-```
-**NOTE**: To update to the latest release, execute `git pull` followed by `sudo npm uninstall -g` and `sudo npm install -g`. 
-
-#### Sample data sent to Apigee
+## Sample data sent to Apigee
 This is a sample snippet of data sent extracted by this tool. In this sample, data from one org (amer-demo29), two environments (test and prod), hourly for time_range_start and time_range_end, and the number of API requests.
 
-**Note that there's no sensitive data along with it.**
+
 ```javascript
 {
   "entities": [
@@ -188,7 +177,7 @@ This is a sample snippet of data sent extracted by this tool. In this sample, da
 }
 ```
 
-#### FAQ
+## FAQ
 **When does this utility send data to Apigee?**
 The Analytics collector is a command line utility to generate and report API usage. Private Cloud customers decide when they want to run this utility. The whole process could be automated by scheduling a cron-job that periodically report the information back to Apigee. It’s recommended to run this job at least once a day.
 
@@ -284,10 +273,10 @@ There are a few options here:
 - **1. Use another box that has access to the external world and the private cloud Mgmt. API** Given that apigee-analytics-collector talks to the Mgmt. API, the tool can retrieve analytics data from any box with access to mgmt. api and forward it to Apigee.
 - **2. Send data directly through apigee-analytics-collector API** Follow the answer in FAQ for the question *Is there a way to submit data manually to Apigee Collector API?*
 
-#### Support
+## Support
 
 - [Apigee Community](http://community.apigee.com)
 - [Open a Github issue](https://github.com/apigee/apigee-analytics-forwarder/issues)
 
-#### License
+## License
 Apache 2.0 Apigee Corporation
