@@ -226,7 +226,7 @@ Yes. You are required to report the usage information. But you are not obligated
 This utility is built to help Customers who are required to share the API usage report to Apigee as per contractual agreements. 
 
 **Where should I report bugs/errors that I find this utility?**
-You can raise an issue in Github (https://github.com/apigee-labs/apigee-analytics-forwarder/ ) and we will fix it for you. You can also raise a support ticket with Apigee.
+Please raise a Support ticket with [Apigee](http://apigee.com/about/support/portal)
 
 **Who supports this utility?**
 If you run into issues or need help, please raise a support ticket.
@@ -277,6 +277,7 @@ There are a few options here:
 
 - [Apigee Community](http://community.apigee.com)
 - [Open a Github issue](https://github.com/apigee/apigee-analytics-forwarder/issues)
+- [Apigee Support](http://apigee.com/about/support/portal)
 
 ## License
 Apache 2.0 Apigee Corporation
