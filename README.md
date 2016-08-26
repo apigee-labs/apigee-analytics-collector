@@ -2,10 +2,10 @@
 This is a tool for reporting traffic volume data from a Private Cloud Edge installation to Apigee. It leverages Apigee Edge Management API to retrieve data and forwards it to Apigee.
 
 #### <a name="installation"></a>Installation
-`apigee-analytics-collector` is a Node.js module and you can install it using npm.
+`apigee-analytics-collector` is a node.js module and you can install it using npm.
 
 ##### Requirements
-NPM 2.x or greater and Node.js 4.x.
+npm 2.x or greater and node.js 4.x.
 
 **The following information is required to forward traffic data to Apigee:**
 
