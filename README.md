@@ -93,7 +93,7 @@ You're done. Check other arguments to customize your workflow. And please be min
 
 It is highly recommended to leverage a job scheduler to execute this job once on a daily basis. Cron and Windows Task Scheduler respectively for *nix and Windows systems are suggested.
 
-## Debug or verbose mode
+## Debug or Verbose mode
 This tool comes enabled with debug module. This is particularly useful to troubleshoot or review what the tool does behind scenes. 
 
 To enable debug/verbose mode prefix the command with `-v` like the command below:
@@ -103,8 +103,8 @@ $ apigee-analytics-collector export traffic --include_orgs abcde -p $ae_password
 --apigee_analytics_client_id $apigee_analytics_client_id --apigee_analytics_secret $apigee_analytics_secret -v
 ```
 
-## Sample data sent to Apigee
-This is a sample snippet of data sent extracted by this tool. In this sample, data from one org (amer-demo29), two environments (test and prod), hourly for time_range_start and time_range_end, and the number of API requests.
+## Sample Report
+Here is a snippet of the report sent to Apigee with this tool. In this sample, data from one org (amer-demo29), two environments (test and prod), hourly for time_range_start and time_range_end, and the number of API requests.
 
 
 ```javascript
@@ -179,7 +179,7 @@ This is a sample snippet of data sent extracted by this tool. In this sample, da
 
 ## FAQ
 **When does this utility send data to Apigee?**
-The Analytics collector is a command line utility to generate and report API usage. Private Cloud customers decide when they want to run this utility. The whole process could be automated by scheduling a cron-job that periodically report the information back to Apigee. It’s recommended to run this job at least once a day.
+The Apigee Analytics Collector is a command line utility to generate and report API usage. Private Cloud customers decide when they want to run this utility. The whole process could be automated by scheduling a cron-job that periodically report the information back to Apigee. It’s recommended to run this job at least once a day.
 
 **Can I affect the data transmission schedule?**
 Yes. You can schedule a job or manually execute the command to report the usage information. 
@@ -274,9 +274,7 @@ There are a few options here:
 - **2. Send data directly through apigee-analytics-collector API** Follow the answer in FAQ for the question *Is there a way to submit data manually to Apigee Collector API?*
 
 ## Support
-
 - [Apigee Community](http://community.apigee.com)
-- [Open a Github issue](https://github.com/apigee/apigee-analytics-forwarder/issues)
 - [Apigee Support](http://apigee.com/about/support/portal)
 
 ## License
