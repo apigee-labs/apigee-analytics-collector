@@ -1,6 +1,6 @@
 {
-  "name": "apigee-analytics-forwarder",
-  "version": "1.0.17",
+  "name": "apigee-analytics-collector",
+  "version": "1.0.18",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,7 @@
   "author": "",
   "license": "Apache-2.0",
   "bin": {
-    "apigee-analytics-forwarder": "./bin/apigee-analytics-forwarder.js"
+    "apigee-analytics-collector": "./bin/apigee-analytics-collector.js"
   },
   "dependencies": {
     "chalk": "^1.1.1",
