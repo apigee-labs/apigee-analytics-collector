@@ -190,8 +190,8 @@ function get_all_traffic_for_page_offset(org_env_window_option, offset) {
         .then( function(res_array) {
           var parsed_response = JSON.parse(res_array);
 
-          debug("parsed_response.environments", parsed_response.environments);
-          debug("check next,", parsed_response.environments.filter(function(env){return env.dimensions ? true : false; }));
+          //debug("parsed_response.environments", parsed_response.environments);
+          //debug("check next,", parsed_response.environments.filter(function(env){return env.dimensions ? true : false; }));
           // if there are dimensions within environments, check next page by increasing offset
           if (parsed_response.environments.filter(function(env){return env.dimensions ? true : false; }).length > 0) {
 

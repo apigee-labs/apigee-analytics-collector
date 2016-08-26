@@ -1,8 +1,12 @@
 {
   "name": "apigee-analytics-collector",
-  "version": "1.0.18",
+  "version": "1.0.19",
   "description": "",
   "main": "index.js",
+	"repository" : { 
+		"type" : "git", 
+		"url" : "https://github.com/apigee-labs/apigee-analytics-collector.git"
+	},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
