@@ -184,7 +184,6 @@ The Apigee Analytics Collector is a command line utility to generate and report 
 **Can I affect the data transmission schedule?**
 Yes. You can schedule a job or manually execute the command to report the usage information. 
 
-
 **If the data transmission is interrupted, does it retry?**
 No. There is no retry mechanism built into the utility. If the utility fails to transmit the data, you will notice an error.
 
@@ -205,7 +204,6 @@ This utility does not store any data by default. If you use the “-s” option 
 
 **What if my Edge environment does have access to Internet? How does this utility help?**
 This utility uses Apigee management APIs to report usage information. If your Edge installation can’t be reached from outside or does not have access to internet, use the utility with “-s” option to generate output on the console. Copy the output and invoke the Apigee Nucleus APIs from a system that has Internet access. 
-
 
 **How do you distinguish between production and non-prod nodes?**
 This utility captures the environment details as part of the reporting. Customers will specify the Orgs and Environments from which the data has to be collected. This is configured as part of the CLI command.
@@ -252,26 +250,22 @@ Apigee customers have complete control over this. The CLI (Command Line Interfac
 **Is there an option not to report usage information of specific API proxies?**
 No. At this time, the utility reports usage information of all API proxies within the selected Org and Environment. 
 
-**Is there a way to submit data manually to Apigee Collector API?**
-Absolutely. apigee-analytics-collector tool was designed to automate the work of extracting and posting the data to Apigee. However, analytics data from Edge can be exported by sending it to the API directly.
-Here's a cURL example to accomplish this:
+**What if the Mgmt. API server doesn't have access to the outside world to forward data?**
+There are a few options here:
+- **Use another box that has access to the external world and the private cloud Mgmt. API** Given that apigee-analytics-collector talks to the Mgmt. API, the tool can retrieve analytics data from any box with access to mgmt. api and forward it to Apigee.
+- **Send data directly through apigee-analytics-collector API** The `apigee-analytics-collector` tool was designed to automate the work of extracting and posting the data to Apigee. However, analytics data from Edge can be exported by sending it to the API directly. Here's a cURL example to accomplish this:
 
 ```bash
-$ curl https://nucleus-api-prod.apigee.com/v1/apigee-analytics-cli-api/traffic/orgs/{org_name}/{apiproducts|devs|apps|apis} -v -X POST -H 'Content-Type:application/json' -u {apigee_analytics_client_id}:{apigee_analytics_secret} -d '{"environments":[{"dimensions":[{"metrics":[{"name":"sum(message_count)","values":[{"timestamp":1458943200000,"value":"3.0"},{"timestamp":1458939600000,"value":"7.0"},{"timestamp":1458936000000,"value":"4.0"},{"timestamp":1458932400000,"value":"5.0"}]}],"name":"forecastweather-grunt-plugin-api"},{"metrics":[{"name":"sum(message_count)","values":[{"timestamp":1458943200000,"value":"0.0"},{"timestamp":1458939600000,"value":"0.0"},{"timestamp":1458936000000,"value":"0.0"},{"timestamp":1458932400000,"value":"0.0"}]}],"name":"weather-swagger-tools"},{"metrics":[{"name":"sum(message_count)","values":[{"timestamp":1458943200000,"value":"0.0"},{"timestamp":1458939600000,"value":"0.0"},{"timestamp":1458936000000,"value":"0.0"},{"timestamp":1458932400000,"value":"0.0"}]}],"name":"api-proxy-nodejs-basic-auth"}],"name":"test"}],"metaData":{"errors":[],"notices":["query served by:ff0ec974-421b-4801-9074-4f9d1ca81fe2","Table used: testmyapi.test.agg_api","source pg:b9c4765e-60d6-4455-9265-5ce1e2e5f13c"]}}'
+$ curl https://nucleus-api-prod.apigee.com/v1/apigee-analytics-cli-api/traffic/orgs/{org_name}/apis -v -X POST -H 'Content-Type:application/json' -u {apigee_analytics_client_id}:{apigee_analytics_secret} -d '{"environments":[{"dimensions":[{"metrics":[{"name":"sum(message_count)","values":[{"timestamp":1458943200000,"value":"3.0"},{"timestamp":1458939600000,"value":"7.0"},{"timestamp":1458936000000,"value":"4.0"},{"timestamp":1458932400000,"value":"5.0"}]}],"name":"forecastweather-grunt-plugin-api"},{"metrics":[{"name":"sum(message_count)","values":[{"timestamp":1458943200000,"value":"0.0"},{"timestamp":1458939600000,"value":"0.0"},{"timestamp":1458936000000,"value":"0.0"},{"timestamp":1458932400000,"value":"0.0"}]}],"name":"weather-swagger-tools"},{"metrics":[{"name":"sum(message_count)","values":[{"timestamp":1458943200000,"value":"0.0"},{"timestamp":1458939600000,"value":"0.0"},{"timestamp":1458936000000,"value":"0.0"},{"timestamp":1458932400000,"value":"0.0"}]}],"name":"api-proxy-nodejs-basic-auth"}],"name":"test"}],"metaData":{"errors":[],"notices":["query served by:ff0ec974-421b-4801-9074-4f9d1ca81fe2","Table used: testmyapi.test.agg_api","source pg:b9c4765e-60d6-4455-9265-5ce1e2e5f13c"]}}'
 ```
 
 **Note that payload above submitted is the same as the data extracted from Apigee Analytics Management API. For more information on this, check [Apigee Documentation](http://docs.apigee.com/management/apis/get/organizations/%7Borg_name%7D/environments/%7Benv_name%7D/stats/%7Bdimension_name%7D-0).**
+
 Here's a sample of a cURL api request to the stats API:
-
 ```bash
-curl -X GET -u {apigee_mgmt_api_email}:{apigee_mgmt_api_password} https://api.enterprise.apigee.com/v1/organizations/{org_name}/environments/{env}/stats/apiproxy?select=sum%28message_count%29&timeRange=06%2F06%2F2016%2000%3A00~06%2F09%2F2016%2000%3A00&timeUnit=hour&limit=14400&offset=0```
+curl -X GET -u {apigee_mgmt_api_email}:{apigee_mgmt_api_password} https://api.enterprise.apigee.com/v1/organizations/{org_name}/environments/{env}/stats/apiproxy?select=sum%28message_count%29&timeRange=06%2F06%2F2016%2000%3A00~06%2F09%2F2016%2000%3A00&timeUnit=hour&limit=14400&offset=0
 ```
-**Note that if records exceed 14400 records, bumping up offset will be required.**
-
-**What if the Mgmt. API server doesn't have access to the outside world to forward data?**
-There are a few options here:
-- **1. Use another box that has access to the external world and the private cloud Mgmt. API** Given that apigee-analytics-collector talks to the Mgmt. API, the tool can retrieve analytics data from any box with access to mgmt. api and forward it to Apigee.
-- **2. Send data directly through apigee-analytics-collector API** Follow the answer in FAQ for the question *Is there a way to submit data manually to Apigee Collector API?*
+***Note that if records exceed 14400 records, bumping up offset will be required.***
 
 ## Support
 - [Apigee Community](http://community.apigee.com)
