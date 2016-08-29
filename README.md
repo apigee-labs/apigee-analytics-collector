@@ -203,7 +203,7 @@ Yes. This utility uses HTTPs to transmit the usage information back to Apigee. H
 This utility does not store any data by default. If you use the `-S` option in CLI, then the information is printed on the console. 
 
 **What if my Edge environment does have access to Internet? How does this utility help?**
-This utility uses Apigee management APIs to report usage information. If your Edge installation can’t be reached from outside or does not have access to internet, use the utility with `-S` option to generate output on the console. Copy the output and invoke the Apigee Nucleus APIs from a system that has Internet access. 
+This utility uses Apigee management APIs to report usage information. If your Edge installation can’t be reached from outside or does not have access to internet, use Apigee Management APIs to pull the analytics from your Edge installation. Then use Apigee Analytics Collector APIs to report the usage to Apigee. Read `What if the Mgmt. API server doesn't have access to the outside world to forward data?` for details.
 
 **How do you distinguish between production and non-prod nodes?**
 This utility captures the environment details as part of the reporting. Customers will specify the Orgs and Environments from which the data has to be collected. This is configured as part of the CLI command.
