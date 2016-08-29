@@ -40,10 +40,10 @@ $ apigee-analytics-collector export traffic --help
     -m, --apigee_mgmt_api_uri <apigee_mgmt_api_uri>                URL to management API
     -u, --apigee_mgmt_api_email <apigee_mgmt_api_email>            Email registered on the Management API. See .env file to setup default value
     -p, --apigee_mgmt_api_password <apigee_mgmt_api_password>      Password associated to the management api email account
-    -i, --include_orgs <items>                                     Include orgs from this list
-    -x, --exclude_orgs <items>                                     Exclude orgs from this list
-    -n, --include_envs <items>                                     Include environments from this list
-    -e, --exclude_envs <items>                                     Exclude envs from this list
+    -i, --include_orgs <items>                                     Include orgs from this list (comma separated) 
+    -x, --exclude_orgs <items>                                     Exclude orgs from this list (comma separated)
+    -n, --include_envs <items>                                     Include environments from this list (comma separated) 
+    -e, --exclude_envs <items>                                     Exclude envs from this list (comma separated)
     -o, --output <path>                                            Path and filename to save output
     -s, --time_range_start <time_range_start>                      Time range start for querying traffic stats e.g. "03/01/2016 00:00"
     -e, --time_range_end <time_range_end>                          Time range end for querying traffic stats e.g. "04/01/2016 24:00"
