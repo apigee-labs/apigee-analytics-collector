@@ -35,7 +35,7 @@ $ apigee-analytics-collector export traffic --help
   Options:
 
     -h, --help                                                     output usage information
-    -D, --dimension <dimension>                                    The traffic dimension to collect. Valid dimensions: apiproducts, developer, apps, apiproxy(default)
+    -D, --dimension <dimension>                                    The traffic dimension to collect. Valid dimensions: apiproducts, devs, apps, apiproxy(default)
     -d, --days <days>                                              The number of days to collect in retrograde. 3 by default
     -m, --apigee_mgmt_api_uri <apigee_mgmt_api_uri>                URL to management API
     -u, --apigee_mgmt_api_email <apigee_mgmt_api_email>            Email registered on the Management API. See .env file to setup default value
