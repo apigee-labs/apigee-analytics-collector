@@ -46,7 +46,7 @@ $ apigee-analytics-collector export traffic --help
     -e, --exclude_envs <items>                                     Exclude envs from this list (comma separated)
     -o, --output <path>                                            Path and filename to save output
     -s, --time_range_start <time_range_start>                      Time range start for querying traffic stats e.g. "03/01/2016 00:00"
-    -e, --time_range_end <time_range_end>                          Time range end for querying traffic stats e.g. "04/01/2016 24:00"
+    -z, --time_range_end <time_range_end>                          Time range end for querying traffic stats e.g. "04/01/2016 24:00"
     -t, --time_unit <time_unit>                                    Time unit for traffic stats. Default week. Default units by hour. Valid time units: second, minute, hour, day, week
     -U, --apigee_analytics_api_url <apigee_analytics_api_url>      apigee analytics URL to submit the traffic output. Send a request to 360@apigee.com to request credentials.
     -S, --standard_output                                          output through the terminal (stdout).
