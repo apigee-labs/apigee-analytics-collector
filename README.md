@@ -1,6 +1,10 @@
 # apigee-analytics-collector
 This is a commandline utility to send the API call volume report back to Apigee. Any Edge Private Cloud installation could use this utility. `apigee-analytics-collector` internally leverages Edge Management APIs to retrieve and report data to Apigee.
 
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=wPV15S5azZs
+" target="_blank"><img src="http://img.youtube.com/vi/wPV15S5azZs/0.jpg" 
+alt="Apigee Analytics Collector Screencast" width="240" height="180" border="10" /></a>
+
 ## <a name="installation"></a>Installation
 `apigee-analytics-collector` is a Node.js module and you can install it using npm.
 
