@@ -41,7 +41,8 @@ program
     .option("-c, --apigee_analytics_client_id <apigee_analytics_client_id>", "cliend_id used to authenticate against apigee analytics api")
     .option("-r, --apigee_analytics_secret <apigee_analytics_secret>", "secret used to authenticate againts apigee analytics api")
     .option("-R, --include_curl_commands", "include sample cURL commands for debugging")
-    .option("-v, --verbose","make the operation more talkative")
+    .option("-v, --verbose", "make the operation more talkative")
+    .option("-k, --chunks <chunks>", "chunks dimensions in smaller sets. Used to avoid long api requests to analytics api, which may take longer than 1 minute.", 5, parseInt)
     //.option("-N, --run_as_standalone_cronjob","indicate to run as a standalone job in background")
     //.option("-E, --cronjob_schedule <cronjob schedule>","cronjob schedule. Default schedule as \"30 2 * * *\", everyday at 2:30 am. Requires --run_as_standalone_flag","30 2 * * *")
     .parse(process.argv);
@@ -71,6 +72,12 @@ function extract_traffic(options) {
     .then(get_orgs_with_envs.bind({ options: options } ))
     .then(exclude_envs_from_orgs.bind( { options: options } ))
     .then(get_traffic.bind( { options: options } ))
+    .then(function resolve_parallel_requests(traffic_data_promises) {
+      return Promise.all(traffic_data_promises);
+    })
+    .then(function(traffic_data) {
+      return chunkify_dimensions(traffic_data, options.chunks); 
+    })
     .then(post_or_save_traffic.bind( { options: options } ))
     .catch(function(err) {
       console.log( err );
@@ -79,22 +86,41 @@ function extract_traffic(options) {
     });
 }
 
-function post_or_save_traffic(org_env_traffic_promises ) {
-  var options = this.options;
-  return Promise.all( org_env_traffic_promises )
-    .then( function( org_env_traffic_array ) {
-      org_env_traffic_array = [].concat.apply([], org_env_traffic_array);
-      var org_env_traffic_array_str = JSON.stringify({"entities": org_env_traffic_array});
-      if (options.output) {
-        debug('options.output',options.output);
-        fs.writeFileSync(options.output, org_env_traffic_array_str);
-        console.log(chalk.green('File saved successfully', options.output));
-      } else if( options.standard_output ){
-        process.stdout.write(org_env_traffic_array_str);
-      } else {
-        return post_traffic( org_env_traffic_array, options );
+function chunkify_dimensions(org_env_traffic_array, chunks) {
+  function chunkify_traffic_dimensions(traffic_environments, chunks) {
+    var env_dimensions_chunked = [];
+    traffic_environments.forEach(function(traffic_env) {
+      while (traffic_env.dimensions.length > 0) {
+        env_dimensions_chunked.push({ dimensions: traffic_env.dimensions.splice(0, chunks), name: traffic_env.name });
       }
     });
+    return env_dimensions_chunked;
+  }
+  org_env_traffic_array = [].concat.apply([], org_env_traffic_array); // flatten array
+  var oet = org_env_traffic_array.map(function(trafficElement) {
+    return chunkify_traffic_dimensions(trafficElement.traffic.environments, chunks) 
+      .map(function(dimension_chunk) {
+        var trafficElementClone = JSON.parse(JSON.stringify(trafficElement));
+        trafficElementClone.traffic.environments = [dimension_chunk];
+        return trafficElementClone;
+      })
+  });
+  return [].concat.apply([], oet);
+}
+
+function post_or_save_traffic(org_env_traffic_array) {
+  var options = this.options;
+  debug("org_env_traffic_array", org_env_traffic_array);
+  org_env_traffic_array = [].concat.apply([], org_env_traffic_array);
+  var org_env_traffic_array_str = JSON.stringify({"entities": org_env_traffic_array});
+  if (options.output) {
+    debug('options.output',options.output);
+    fs.writeFileSync(options.output, org_env_traffic_array_str);
+    return console.log(chalk.green('File saved successfully', options.output));
+  } else if( options.standard_output ){
+    return process.stdout.write(org_env_traffic_array_str);
+  }
+    return post_traffic( org_env_traffic_array, options );
 }
 
 function post_traffic(traffic_array, options) {
@@ -180,6 +206,7 @@ function get_org_env_window_traffic_promises( org_env_window_options ) {
   return org_env_window_traffic_promise;
 }
 
+// here is where we make calls to the management api
 function get_all_traffic_for_page_offset(org_env_window_option, offset) {
   "use strict";
   var all_pages_traffic_stats = [];
@@ -189,9 +216,6 @@ function get_all_traffic_for_page_offset(org_env_window_option, offset) {
     return request( org_env_window_option )
         .then( function(res_array) {
           var parsed_response = JSON.parse(res_array);
-
-          //debug("parsed_response.environments", parsed_response.environments);
-          //debug("check next,", parsed_response.environments.filter(function(env){return env.dimensions ? true : false; }));
           // if there are dimensions within environments, check next page by increasing offset
           if (parsed_response.environments.filter(function(env){return env.dimensions ? true : false; }).length > 0) {
 
