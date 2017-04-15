@@ -1,0 +1,14 @@
+cd $COMPONENT_ROOT
+if [ ! -d $COMPONENT_ROOT/node_modules ]; then
+   if [[ "$LOGNAME" == "root" ]]; then
+      echo "Initial setup is not complete, you must run this command as a non-root user."
+      exit 1
+   fi
+   echo "################################################################################"
+   echo "Installing node dependencies (expected during first run ..)"
+   npm install
+   [ $? -eq 0 ] && echo "Node dependencies installed successfully!"
+   echo "################################################################################"
+fi
+command -v node >/dev/null 2>&1 || { echo >&2 "This program requires node but it's not installed or not in the path. Please fix the issue and try again. Aborting."; exit 1; }
+node bin/apigee-analytics-collector.js $action $*
