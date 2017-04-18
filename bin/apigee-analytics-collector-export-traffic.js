@@ -27,7 +27,7 @@ program
                                      'of traffic one day at a time, 3 days at a time or \'N\' days at a time.  Using this ' +
                                      'results in shorter-lived AX requests and can be used to reduce timeouts from AX API. 3 by default', 3, parseInt)
     .option("-m, --apigee_mgmt_api_uri <apigee_mgmt_api_uri>", "URL to management API")
-    .option("-M, --metric <metric>", "Metric to be collected. For list of metrics see http://docs.apigee.com/management/apis/get/organizations/%7Borg_name%7D/environments/%7Benv_name%7D/stats/%7Bdimension_name%7D-0", /^(message_count|tps|is_error|policy_error|target_error|request_processing_latency|request_size|response_processing_latency|response_size|target_response_time|total_response_time|cache_hit|ax_cache_l1_count|ax_cache_executed)/i, "message_count")
+    .option("-M, --metric <metric>", "Metric to be collected. For list of metrics see https://goo.gl/fv69d2", /^(message_count|tps|is_error|policy_error|target_error|request_processing_latency|request_size|response_processing_latency|response_size|target_response_time|total_response_time|cache_hit|ax_cache_l1_count|ax_cache_executed)/i, "message_count")
     .option("-u, --apigee_mgmt_api_email <apigee_mgmt_api_email>", "Email registered on the Management API. See .env file to setup default value")
     .option("-p, --apigee_mgmt_api_password <apigee_mgmt_api_password>", "Password associated to the management api email account")
     .option("-i, --include_orgs <items>", 'Include orgs from this list (comma separated)', list)
