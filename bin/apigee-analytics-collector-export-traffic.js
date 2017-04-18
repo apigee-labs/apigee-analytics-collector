@@ -17,7 +17,8 @@ var program = require('commander'),
 
 program
     .description('Export data from the management API')
-    .option("-D, --dimension <dimension>", "The traffic dimension to collect. Valid dimensions: apiproducts, devs, apps, apis(default)", /^(apiproducts|devs|apps|apis)$/i, 'apis')
+    .option("-A, --aggregate_function <aggregate_function>", "Valid dimensions: avg, apps, min, max, sum (default)", /^(avg|apps|min|max|sum)$/i, 'sum')
+    .option("-D, --dimension <dimension>", "The traffic dimension to collect. Valid dimensions: apiproducts, devs, app, apis(default)", /^(apiproducts|devs|apps|apis)$/i, 'apis')
     .option("-d, --days <days>", "The number of days to collect in retrograde. 3 by default", 3, parseInt)
 
     // added back
@@ -26,6 +27,7 @@ program
                                      'of traffic one day at a time, 3 days at a time or \'N\' days at a time.  Using this ' +
                                      'results in shorter-lived AX requests and can be used to reduce timeouts from AX API. 3 by default', 3, parseInt)
     .option("-m, --apigee_mgmt_api_uri <apigee_mgmt_api_uri>", "URL to management API")
+    .option("-M, --metric <metric>", "Metric to be collected. For list of metrics see http://docs.apigee.com/management/apis/get/organizations/%7Borg_name%7D/environments/%7Benv_name%7D/stats/%7Bdimension_name%7D-0", /^(message_count|tps|is_error|policy_error|target_error|request_processing_latency|request_size|response_processing_latency|response_size|target_response_time|total_response_time|cache_hit|ax_cache_l1_count|ax_cache_executed)/i, "message_count")
     .option("-u, --apigee_mgmt_api_email <apigee_mgmt_api_email>", "Email registered on the Management API. See .env file to setup default value")
     .option("-p, --apigee_mgmt_api_password <apigee_mgmt_api_password>", "Password associated to the management api email account")
     .option("-i, --include_orgs <items>", 'Include orgs from this list (comma separated)', list)
@@ -173,7 +175,7 @@ function get_traffic( orgs ) {
       (date_windows||[]).forEach( function( date_window ) {
             debug('time range', date_window.start_date_str.concat('~').concat(date_window.end_date_str));
             var _options = get_base_options( options, ['/organizations', org.org, '/environments/', env, '/stats/', options.dimension ], {
-              'select': 'sum(message_count)',
+              'select': options.aggregate_function + '(' + options.metric + ')',
               'timeRange': date_window.start_date_str.concat('~').concat(date_window.end_date_str),
               'timeUnit': options.time_unit,
               'limit': 14400,
@@ -182,7 +184,8 @@ function get_traffic( orgs ) {
             _options.stat = { org: org.org, env: env,
               time_range_start: date_window.start_date_str,
               time_range_end: date_window.end_date_str,
-              dimension: options.dimension
+              dimension: options.dimension,
+              aggregate_function: options.aggregate_function
             };
             org_env_window_options.push( _options );
           });
@@ -221,7 +224,7 @@ function get_all_traffic_for_page_offset(org_env_window_option, offset) {
 
             // clone org_env_window_option
             var org_env_window_option_t = JSON.parse(JSON.stringify(org_env_window_option));
-            org_env_window_option_t.stat.traffic = rename_message_count_metric_name(parsed_response);
+            org_env_window_option_t.stat.traffic = rename_message_count_metric_name(parsed_response, org_env_window_option);
             all_pages_traffic_stats.push(org_env_window_option_t.stat);
             debug('requesting next page');
             return get_traffic_for_page_offset(org_env_window_option, offset + 14400);
@@ -233,11 +236,12 @@ function get_all_traffic_for_page_offset(org_env_window_option, offset) {
   return get_traffic_for_page_offset(org_env_window_option, offset);
 }
 
-function rename_message_count_metric_name( stats ) {
+function rename_message_count_metric_name( stats, options ) {
   (stats.environments||[]).forEach( function( environment ) {
     (environment.dimensions||[]).map( function( dimension ) {
       (dimension.metrics||[]).map( function( metric ) {
-        if( metric.name === 'sum(message_count)' ) metric.name = 'message_count';
+        //if( metric.name === 'sum(message_count)' ) metric.name = 'message_count';
+        metric.name = options.metric;
       } );
     } );
   }  ); 
