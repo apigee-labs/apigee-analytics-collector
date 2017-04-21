@@ -13,21 +13,21 @@ var program = require('commander'),
     curl = require('curl-cmd'),
     qs = require('qs'),
     mask = require('json-mask'),
-    CronJob = require('cron').CronJob;
+    CronJob = require('cron').CronJob,
+    regex_extract_between_parenthesis = /\(([^\)]+)\)/g;
 
 program
     .description('Export data from the management API')
-    .option("-A, --aggregate_function <aggregate_function>", "Valid dimensions: avg, apps, min, max, sum (default)", /^(avg|apps|min|max|sum)$/i, 'sum')
+    .option("-E, --select <select_columns>", "Return metrics in a single request e.g. sum(message_count),avg(total_response_time). More info https://goo.gl/fv69d2. Default sum(message_count)", 'sum(message_count)')
     .option("-D, --dimension <dimension>", "The traffic dimension to collect. Valid dimensions: apiproducts, devs, app, apis(default)", /^(apiproducts|devs|apps|apis)$/i, 'apis')
     .option("-d, --days <days>", "The number of days to collect in retrograde. 3 by default", 3, parseInt)
 
     // added back
-    // it was removed because of bug in windows bigger than 24 hours in stats api, which can be fixed by giving large limit. e.g. 1'000'000 records
+    // it was removed because of a bug in windows bigger than 24 hours in stats api, which can be fixed by giving large limit. e.g. 1'000'000 records
     .option("-w, --window <window>", 'The number days to collect per request.  For example, you can collect a month ' +
                                      'of traffic one day at a time, 3 days at a time or \'N\' days at a time.  Using this ' +
                                      'results in shorter-lived AX requests and can be used to reduce timeouts from AX API. 3 by default', 3, parseInt)
     .option("-m, --apigee_mgmt_api_uri <apigee_mgmt_api_uri>", "URL to management API")
-    .option("-M, --metric <metric>", "Metric to be collected. For list of metrics see https://goo.gl/fv69d2", /^(message_count|tps|is_error|policy_error|target_error|request_processing_latency|request_size|response_processing_latency|response_size|target_response_time|total_response_time|cache_hit|ax_cache_l1_count|ax_cache_executed)/i, "message_count")
     .option("-u, --apigee_mgmt_api_email <apigee_mgmt_api_email>", "Email registered on the Management API. See .env file to setup default value")
     .option("-p, --apigee_mgmt_api_password <apigee_mgmt_api_password>", "Password associated to the management api email account")
     .option("-i, --include_orgs <items>", 'Include orgs from this list (comma separated)', list)
@@ -45,8 +45,6 @@ program
     .option("-R, --include_curl_commands", "include sample cURL commands for debugging")
     .option("-v, --verbose", "make the operation more talkative")
     .option("-k, --chunks <chunks>", "chunks dimensions in smaller sets. Used to avoid long api requests to analytics api, which may take longer than 1 minute.", 5, parseInt)
-    //.option("-N, --run_as_standalone_cronjob","indicate to run as a standalone job in background")
-    //.option("-E, --cronjob_schedule <cronjob schedule>","cronjob schedule. Default schedule as \"30 2 * * *\", everyday at 2:30 am. Requires --run_as_standalone_flag","30 2 * * *")
     .parse(process.argv);
 
 // this is required to enable debug as a flag instead of as an environment variable
@@ -175,7 +173,7 @@ function get_traffic( orgs ) {
       (date_windows||[]).forEach( function( date_window ) {
             debug('time range', date_window.start_date_str.concat('~').concat(date_window.end_date_str));
             var _options = get_base_options( options, ['/organizations', org.org, '/environments/', env, '/stats/', options.dimension ], {
-              'select': options.aggregate_function + '(' + options.metric + ')',
+              'select': options.select,
               'timeRange': date_window.start_date_str.concat('~').concat(date_window.end_date_str),
               'timeUnit': options.time_unit,
               'limit': 14400,
@@ -184,8 +182,7 @@ function get_traffic( orgs ) {
             _options.stat = { org: org.org, env: env,
               time_range_start: date_window.start_date_str,
               time_range_end: date_window.end_date_str,
-              dimension: options.dimension,
-              aggregate_function: options.aggregate_function
+              dimension: options.dimension
             };
             org_env_window_options.push( _options );
           });
@@ -224,7 +221,7 @@ function get_all_traffic_for_page_offset(org_env_window_option, offset) {
 
             // clone org_env_window_option
             var org_env_window_option_t = JSON.parse(JSON.stringify(org_env_window_option));
-            org_env_window_option_t.stat.traffic = rename_message_count_metric_name(parsed_response, org_env_window_option);
+            org_env_window_option_t.stat.traffic = rename_message_count_metric_name(parsed_response);
             all_pages_traffic_stats.push(org_env_window_option_t.stat);
             debug('requesting next page');
             return get_traffic_for_page_offset(org_env_window_option, offset + 14400);
@@ -236,12 +233,13 @@ function get_all_traffic_for_page_offset(org_env_window_option, offset) {
   return get_traffic_for_page_offset(org_env_window_option, offset);
 }
 
-function rename_message_count_metric_name( stats, options ) {
+function rename_message_count_metric_name(stats) {
   (stats.environments||[]).forEach( function( environment ) {
     (environment.dimensions||[]).map( function( dimension ) {
       (dimension.metrics||[]).map( function( metric ) {
-        //if( metric.name === 'sum(message_count)' ) metric.name = 'message_count';
-        metric.name = options.metric;
+        var arr = /\(([^\)]+)\)/g.exec(metric.name);
+        if(arr)
+          metric.name = arr[1];
       } );
     } );
   }  ); 
