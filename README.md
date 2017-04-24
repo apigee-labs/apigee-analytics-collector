@@ -24,13 +24,13 @@ npm 2.x or greater and Node.js 4.x.
 ```bash
 npm install apigee-analytics-collector -g
 ```
-**For future beta features use beta tag, so `npm install apigee-analytics-collector@beta`**
+**Use beta tag for influx features, so `npm install apigee-analytics-collector@beta -g`**
 
 *NOTE*: The `-g` option places the apigee-analytics-collector command in your PATH. On "\*nix"-based machines, `sudo` may be required with the `-g` option. If you do not use `-g`, then you need to add the apigee-analytics-cli command to your PATH manually. Typically, the `-g` option places modules in: `/usr/local/lib/node_modules/apigee-analytics-cli` on *nix-based machines.
 
 ## Parameters
 
-```bash
+```bash`
 $ apigee-analytics-collector export traffic --help
 
   Usage: apigee-analytics-collector-export-traffic [options]
