@@ -13,8 +13,7 @@ var program = require('commander'),
     curl = require('curl-cmd'),
     qs = require('qs'),
     mask = require('json-mask'),
-    CronJob = require('cron').CronJob,
-    regex_extract_between_parenthesis = /\(([^\)]+)\)/g;
+    CronJob = require('cron').CronJob;
 
 program
     .description('Export data from the management API')
@@ -237,9 +236,9 @@ function rename_message_count_metric_name(stats) {
   (stats.environments||[]).forEach( function( environment ) {
     (environment.dimensions||[]).map( function( dimension ) {
       (dimension.metrics||[]).map( function( metric ) {
-        var arr = /\(([^\)]+)\)/g.exec(metric.name);
-        if(arr)
-          metric.name = arr[1];
+        var metric_name = /\(([^\)]+)\)/g.exec(metric.name) ? /\(([^\)]+)\)/g.exec(metric.name)[1] : "",
+          prefix = /^[^\(]+/g.exec(metric.name) ? /^[^\(]+/g.exec(metric.name)[0] : "";
+        metric.name = (metric_name == 'message_count') ? metric_name : prefix.concat('_').concat(metric_name);
       } );
     } );
   }  ); 
